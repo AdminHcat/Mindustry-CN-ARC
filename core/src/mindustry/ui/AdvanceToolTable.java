@@ -32,6 +32,7 @@ import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.blocks.payloads.Payload;
+import mindustry.world.blocks.payloads.UnitPayload;
 
 import static mindustry.Vars.*;
 import static mindustry.Vars.world;
@@ -56,7 +57,7 @@ public class AdvanceToolTable extends Table {
     private int unitItemAmount = 0;
     private boolean showSelectItems = false,showSelectPayload = false;
     /** Seq of payloads that this unit will spawn with. */
-    private Seq<UnitType> unitPayload = Seq.with();
+    private Seq<Unit> unitPayload = Seq.with();
 
     private ObjectMap<String,Float> unitProperty =  new ObjectMap();
     private StatusEffect status = StatusEffects.none;
@@ -306,12 +307,9 @@ public class AdvanceToolTable extends Table {
 
                     if (unit instanceof Payloadc pay){
                         unitPayload.each(payload ->{
-                            Unit payloadUnit = payload.create(unitTeam);
-                            pay.pickup(payloadUnit);
+                            pay.pickup(payload);
                         });
                     }
-
-
                     unit.add();
                 }
                 if (control.input instanceof DesktopInput) {
@@ -421,31 +419,67 @@ public class AdvanceToolTable extends Table {
                     pt.row();
                 }).fillX().row();
                 }
-                p.button(UnitTypes.mono.emoji(),cleart,() -> {showSelectPayload = !showSelectPayload;rebuildItems[0].run();}).size(50f);
-                p.row();
 
                 p.table(pt->{
                     int i = 0;
-                    for (UnitType payload:unitPayload){
-                        pt.button(payload.emoji(), () -> {
-                            unitPayload.remove(payload);
-                            rebuildItems[0].run();
-                        }).size(50f).left();
+                    for (Unit payload:unitPayload){
+                        if((payload instanceof Payloadc pay && pay.hasPayload())|| payload.hasItem()){
+                            pt.button(payload.type.emoji() + "[red]*",
+                                () -> {unitPayload.remove(payload);
+                                    rebuildItems[0].run();
+                                }).size(50f).left();
+                        }
+                        else{
+                            pt.button(payload.type.emoji(),
+                                    () -> {unitPayload.remove(payload);
+                                        rebuildItems[0].run();
+                                    }).size(50f).left();
+                        }
+
                         if (++i % 8 == 0) pt.row();
                     }
                 }).row();
+
+                p.button(UnitTypes.mono.emoji(),cleart,() -> {showSelectPayload = !showSelectPayload;rebuildItems[0].run();}).size(50f);
+                p.row();
 
                 if (showSelectPayload){
                     p.pane(list -> {
                         int i = 0;
                         for (UnitType units : content.units()) {
                             list.button(units.emoji(), () -> {
-                                unitPayload.add(units);
+                                unitPayload.add(units.create(unitTeam));
                                 rebuildItems[0].run();
                             }).size(50f);
                             if (++i % 8 == 0) list.row();
                         }
                     });
+                    p.row();
+                    p.table(pt->{
+                        pt.button("[cyan]自递归",()->{
+                            Unit unit = spawning.create(unitTeam);
+                            unit.set(unitLoc.x * tilesize + Tmp.v1.x, unitLoc.y * tilesize + Tmp.v1.y);
+                            unitStatus.each((status,statusDuration)->{
+                                unit.apply(status,statusDuration * 60f);
+                            });
+                            if (unitItems!=null) unit.addItem(unitItems,unitItemAmount);
+
+                            if (unit instanceof Payloadc pay){
+                                unitPayload.each(payload ->{
+                                    pay.addPayload(new UnitPayload(payload));
+                                });
+                            }
+
+
+
+                            rebuildItems[0].run();
+                        });
+                        pt.button("?",()->ui.showInfo("使用说明：携带的单位存在一个序列，每个单位可以具备特定的属性。\n[cyan]自递归[white]是指根据当前的配置生成一个单位，并储存到载荷序列上"
+                                +"\n这一单位具备所有目前设置的属性，包括buff、物品和载荷。\n合理使用自递归可以发掘无限的可能性"+
+                                "\n[orange][警告]尚不清楚连续套娃是否会对游戏产生影响")).size(50f);
+
+                    });
+
                 }
 
 
