@@ -40,6 +40,7 @@ public class HudFragment{
     public boolean shown = true;
 
     private ImageButton flip;
+    private Slider minimapSlider;
     private CoreItemsDisplay coreItems = new CoreItemsDisplay();
     private OtherCoreItemDisplay otherCoreItemDisplay = new OtherCoreItemDisplay();
     private MI2ToolsTable mi2ToolsTable = new MI2ToolsTable();
@@ -101,6 +102,9 @@ public class HudFragment{
             otherCoreItemDisplay.updateTeamList();
             mi2ToolsTable.rebuild();
 
+            if(minimapSlider != null){
+                minimapSlider.setRange(0.1f, Math.min(world.width(), world.height()) / 16f / 2f);
+            }
         });
 
         //paused table
@@ -126,6 +130,22 @@ public class HudFragment{
             //minimap
             t.add(new Minimap()).name("minimap");
             t.row();
+            if(mobile){
+                t.table(tt -> {
+                    tt.button("M", Styles.cleart, () -> {
+                        ui.minimapfrag.toggle();
+                    }).left().size(40f);
+
+                    tt.button("+", Styles.cleart, () -> {
+                        renderer.minimap.setZoom(renderer.minimap.getZoom() * 1.2f);
+                    }).left().size(40f);
+
+                    tt.button("-", Styles.cleart, () -> {
+                        renderer.minimap.setZoom(renderer.minimap.getZoom() * 0.8f);
+                    }).left().size(40f);
+                }).fillX().row();
+            }
+
             //position
             t.label(() ->
                 (Core.settings.getBool("position") ? player.tileX() + "," + player.tileY() + "\n" : "") +
