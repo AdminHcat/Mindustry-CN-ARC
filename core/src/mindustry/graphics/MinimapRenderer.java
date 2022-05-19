@@ -81,7 +81,7 @@ public class MinimapRenderer{
     }
 
     public void setZoom(float amount){
-        zoom = Mathf.clamp(amount, 1f, Math.min(world.width(), world.height()) / baseSize / 2f);
+        zoom = Mathf.clamp(amount, 1f, Math.max(world.width(), world.height()) / baseSize / 2f);
     }
 
     public float getZoom(){

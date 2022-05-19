@@ -148,18 +148,6 @@ public class MI2ToolsTable extends Table{
                         }).row();
                     }).padLeft(2).left().fillX();
                 }).left();
-
-                t.row();
-
-                /* map rules 2 */
-                Table rulesTable2 = t.table().left().get();
-                addRules2(rulesTable2, "BH", () -> "" + rules.blockHealthMultiplier);
-                addRules2(rulesTable2, "BD", () -> "" + rules.blockDamageMultiplier);
-                addRules2(rulesTable2, "UD", () -> "" + rules.unitDamageMultiplier);
-                addRules2(rulesTable2, "BC", () -> "" + rules.buildCostMultiplier);
-                addRules2(rulesTable2, "BS", () -> "" + rules.buildSpeedMultiplier);
-                addRules2(rulesTable2, "BR", () -> "" + rules.deconstructRefundMultiplier);
-                addRules2(rulesTable2, "UB", () -> "" + rules.unitBuildSpeedMultiplier);
             }, () -> showns[0]).left();
 
             body.row();

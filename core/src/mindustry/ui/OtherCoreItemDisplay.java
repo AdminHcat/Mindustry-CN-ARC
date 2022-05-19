@@ -5,6 +5,7 @@ import arc.scene.ui.ImageButton;
 import arc.scene.ui.TextButton;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import arc.util.Strings;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.content.Blocks;
@@ -63,36 +64,40 @@ public class OtherCoreItemDisplay extends Table {
                     buttons.button("[red]×",textStyle, () -> {
                         show = !show;
                         rebuild();
-                    }).width(40f).row();
+                    }).size(40f).row();
 
                     buttons.button("+",textStyle, () -> {
                         if(showTeams > teams.size) return;
                         showTeams += 1;
                         if(showTeams > 15) showTeams = 15;
-                    }).width(40f).row();
+                    }).size(40f).row();
     
                     buttons.button("-",textStyle, () -> {
                         showTeams -= 1;
                         if(showTeams <= 0) showTeams = 1;
-                    }).width(40f).row();
+                    }).size(40f).row();
     
                     buttons.button(">",textStyle, () -> {
                         showStart += 1;
                         if(showStart + showTeams > teams0.size) showStart = teams0.size - showTeams;
-                    }).width(40f).row();
+                    }).size(40f).row();
     
                     buttons.button("<",textStyle, () -> {
                         showStart -= 1;
                         if(showStart < 0) showStart = 0;
-                    }).width(40f).row();
-    
+                    }).size(40f).row();
+
+                    buttons.button(Blocks.worldProcessor.emoji(),textStyle, () -> {
+                        showStat = !showStat;
+                    }).size(40f).row();
+
                     buttons.button(content.items().get(0).emoji(),textStyle, () -> {
                         showItem = !showItem;
-                    }).width(40f).row();
+                    }).size(40f).row();
     
                     buttons.button(UnitTypes.mono.emoji(),textStyle, () -> {
                         showUnit = !showUnit;
-                    }).width(40f);
+                    }).size(40f);
                 }).left();
         
                 teamsRebuild();
@@ -139,18 +144,49 @@ public class OtherCoreItemDisplay extends Table {
         teamsTable.row();
         teamsTable.label(() -> Blocks.coreNucleus.emoji()).get().setFontScale(fontScl);
         for (Teams.TeamData team : teams) {
-            teamsTable.label(() -> {
-                return UI.formatAmount(team.cores.size);
-            }).padRight(1).get().setFontScale(fontScl);
+            teamsTable.label(() -> "[#" + team.team.color + "]" + UI.formatAmount(team.cores.size)).padRight(1).get().setFontScale(fontScl);
         }
         teamsTable.row();
         teamsTable.label(() -> UnitTypes.mono.emoji()).get().setFontScale(fontScl);
         for (Teams.TeamData team : teams) {
-            teamsTable.label(() -> {
-                return UI.formatAmount(team.units.size);
-            }).padRight(1).get().setFontScale(fontScl);
+            teamsTable.label(() -> "[#" + team.team.color + "]" + UI.formatAmount(team.units.size)).padRight(1).get().setFontScale(fontScl);
         }
         teamsTable.row();
+
+        if(showStat){
+            teamsTable.image(Blocks.siliconSmelter.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + (state.rules.teams.get(team.team).cheat? "[green]+":"[red]×")).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+            teamsTable.image(Blocks.arc.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + Strings.autoFixed(state.rules.teams.get(team.team).blockDamageMultiplier * state.rules.blockDamageMultiplier,2)).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+            teamsTable.image(Blocks.titaniumWall.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + Strings.autoFixed(state.rules.teams.get(team.team).blockHealthMultiplier * state.rules.blockHealthMultiplier,2)).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+            teamsTable.image(UnitTypes.corvus.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + Strings.autoFixed(state.rules.teams.get(team.team).unitDamageMultiplier * state.rules.unitDamageMultiplier,2)).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+            teamsTable.image(UnitTypes.poly.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + Strings.autoFixed(state.rules.teams.get(team.team).buildSpeedMultiplier * state.rules.buildSpeedMultiplier,2)).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+            teamsTable.image(Blocks.tetrativeReconstructor.uiIcon).size(15,15).left().get();
+            for(Teams.TeamData team : teams){
+                teamsTable.label(() -> "[#" + team.team.color + "]" + Strings.autoFixed(state.rules.teams.get(team.team).unitBuildSpeedMultiplier * state.rules.unitBuildSpeedMultiplier,2)).get().setFontScale(fontScl);
+            }
+            teamsTable.row();
+
+
+        }
 
         if(showItem){
             boolean[] dispItems = new boolean[content.items().size];
@@ -166,7 +202,7 @@ public class OtherCoreItemDisplay extends Table {
                     //teamsTable.label(() -> item.emoji()).padRight(5f).left().get().setFontScale(fontScl);
                     teamsTable.image(item.uiIcon).size(15,15).left().get(); 
                     for(Teams.TeamData team : teams){
-                        teamsTable.label(() -> "" + ((team.hasCore() && team.core().items.get(item) > 0) ? UI.formatAmount(team.core().items.get(item)) : "-")).get().setFontScale(fontScl);
+                        teamsTable.label(() -> "[#" + team.team.color + "]" + ((team.hasCore() && team.core().items.get(item) > 0) ? UI.formatAmount(team.core().items.get(item)) : "-")).get().setFontScale(fontScl);
                     }
                     teamsTable.row();
 
@@ -188,7 +224,7 @@ public class OtherCoreItemDisplay extends Table {
                     //teamsTable.label(() -> unit.emoji()).padRight(5f).left().get().setFontScale(fontScl);
                     teamsTable.image(unit.uiIcon).size(15,15).left().get(); 
                     for(Teams.TeamData team : teams){
-                        teamsTable.label(() -> "" + (team.countType(unit) > 0 ? team.countType(unit) : "-")).get().setFontScale(fontScl);
+                        teamsTable.label(() -> "[#" + team.team.color + "]" + (team.countType(unit) > 0 ? team.countType(unit) : "-")).get().setFontScale(fontScl);
                     }
                     teamsTable.row();
 

@@ -40,7 +40,6 @@ public class HudFragment{
     public boolean shown = true;
 
     private ImageButton flip;
-    private Slider minimapSlider;
     private CoreItemsDisplay coreItems = new CoreItemsDisplay();
     private OtherCoreItemDisplay otherCoreItemDisplay = new OtherCoreItemDisplay();
     private MI2ToolsTable mi2ToolsTable = new MI2ToolsTable();
@@ -101,10 +100,6 @@ public class HudFragment{
         Events.on(WorldLoadEvent.class,e->{
             otherCoreItemDisplay.updateTeamList();
             mi2ToolsTable.rebuild();
-
-            if(minimapSlider != null){
-                minimapSlider.setRange(0.1f, Math.min(world.width(), world.height()) / 16f / 2f);
-            }
         });
 
         //paused table
@@ -147,9 +142,9 @@ public class HudFragment{
             }
 
             //position
-            t.label(() ->
+            t.label(() -> player.unit().type.emoji() +
                 (Core.settings.getBool("position") ? player.tileX() + "," + player.tileY() + "\n" : "") +
-                (Core.settings.getBool("mouseposition") ? "[lightgray]" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
+                            (Core.settings.getBool("mouseposition") ?  "[lightgray]" + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
             .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
             .touchable(Touchable.disabled)
             .style(Styles.outlineLabel)
