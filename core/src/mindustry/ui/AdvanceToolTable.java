@@ -303,7 +303,7 @@ public class AdvanceToolTable extends Table {
                         for(Team team:Team.baseTeams){
                             tt.button("[#" + team.color +  "]" + team.localized(),cleart,()->{unitTeam = team;rebuildTable[0].run();}).size(30,30).color(team.color);
                         }
-                        tt.button("更多", cleart ,() -> {
+                        tt.button("[violet]+", cleart ,() -> {
                             BaseDialog selectTeamDialog = new BaseDialog("队伍选择器");
                             Table selectTeam = new Table().top();
                             selectTeamDialog.cont.pane(td->{
