@@ -277,7 +277,7 @@ public class AdvanceToolTable extends Table {
                     for (UnitType units : content.units()) {
                         if (i++ % 8 == 0) list.row();
                         list.button(units.emoji(),cleart, () -> {
-                            if(unit.type !=units) {resetUnitType(unit,units);rebuildTable[0].run();}
+                            if(unit.type !=units) {changeUnitType(unit,units);rebuildTable[0].run();}
                             showUnitSelect = !showUnitSelect;
                             rebuildTable[0].run();
                         }).size(50f);
@@ -510,6 +510,13 @@ public class AdvanceToolTable extends Table {
         if (unit instanceof Payloadc pay){
             pay.payloads().clear();
         }
+        unitStatus.clear();
+    }
+
+    private void changeUnitType(Unit unit, UnitType unitType){
+        unit.type = unitType;
+        unit.health = unitType.health;
+        unit.shield = 0;
         unitStatus.clear();
     }
 
