@@ -561,6 +561,7 @@ public class SettingsMenuDialog extends BaseDialog{
         arc.checkPref("unitLogicTimerBars", false);
 
         arc.addCategory("arcRTSSupporter");
+        if(mobile) arc.checkPref("mobileCommandMode",false);
         arc.checkPref("alwaysShowUnitRTSAi",false);
         arc.sliderPref("rtsWoundUnit",0, 0, 100, 2, s -> s+ "%");
 

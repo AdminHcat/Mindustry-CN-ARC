@@ -405,7 +405,7 @@ public class PlacementFragment{
                 mainStack.update(() -> {
                     if(control.input.commandMode != wasCommandMode){
                         mainStack.clearChildren();
-                        if(!mobile || !control.input.commandMode){
+                        if((!mobile || Core.settings.getBool("mobileCommandMode")) || !control.input.commandMode){
                             mainStack.addChild(control.input.commandMode ? commandTable : blockCatTable);
 
                             //hacky, but forces command table to be same width as blocks
