@@ -39,6 +39,8 @@ public class PlacementFragment{
     ObjectFloatMap<Category> scrollPositions = new ObjectFloatMap<>();
     @Nullable Block menuHoverBlock;
     @Nullable Displayable hover,hover2;
+    @Nullable Tile hoverTile;
+    @Nullable Object lastDisplayTile;
     @Nullable Building lastFlowBuild, nextFlowBuild;
     @Nullable Object lastDisplayState;
     @Nullable Team lastTeam;
@@ -306,19 +308,21 @@ public class PlacementFragment{
                         //find current hovered thing
                         Displayable hovered = hover;
                         Displayable hovered2 = hover2;
+                        Displayable hoveredTile = hoverTile;
                         Block displayBlock = menuHoverBlock != null ? menuHoverBlock : control.input.block;
                         Object displayState = displayBlock != null ? displayBlock : hovered;
                         boolean isHovered = displayBlock == null; //use hovered thing if displayblock is null
 
                         //don't refresh unnecessarily
                         //refresh only when the hover state changes, or the displayed block changes
-                        if(wasHovered == isHovered && lastDisplayState == displayState) return;
+                        if(wasHovered == isHovered && lastDisplayState == displayState && lastDisplayTile == hoveredTile) return;
 
                         topTable.clear();
                         topTable.top().left().margin(5);
 
                         lastDisplayState = displayState;
                         wasHovered = isHovered;
+                        lastDisplayTile = hoveredTile;
                         lastTeam = player.team();
 
                         //show details of selected block, with costs
@@ -391,8 +395,21 @@ public class PlacementFragment{
                                 topTable.row();
                                 topTable.row();
                                 hovered2.display(topTable);
-                            }
+                            }}
+
+                        //只要可行便绘制地板|建筑，移除了其他重复绘制
+                        if(hoveredTile!=null){
+                            topTable.row();
+                            topTable.row();
+                            topTable.table(t -> {
+                                t.left();
+                                t.add(new Image(hoverTile.floor().uiIcon)).size(20f).left();
+                                t.add(" "+hoverTile.floor().localizedName).left();
+                                if(hoverTile.block()!=Blocks.air) t.add(" | " + hoverTile.block().emoji()   + (hoverTile.build!=null?"[#" + hoverTile.build.team.color + "]":"") + hoverTile.block().localizedName).left();
+                                if(hoverTile.overlay()!=Blocks.air) t.add(" | " + hoverTile.overlay().emoji() + hoverTile.overlay().localizedName).left();
+                            }).growX().left();
                         }
+
                     });
                 }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
 
@@ -602,7 +619,8 @@ public class PlacementFragment{
     boolean hasInfoBox(){
         hover = hovered();
         hover2 = hoveredblock();
-        return control.input.block != null || menuHoverBlock != null || hover != null;
+        hoverTile = hoveredTile();
+        return control.input.block != null || menuHoverBlock != null || hover != null || hoverTile != null;
     }
 
     /** Returns the thing being hovered over. */
@@ -623,13 +641,8 @@ public class PlacementFragment{
         Tile hoverTile = world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
         if(hoverTile != null){
             //if the tile has a building, display it
-            if(hoverTile.build != null && hoverTile.build.displayable() && !hoverTile.build.inFogTo(player.team())){
+            if(hoverTile.build != null && hoverTile.build.displayable()  && !hoverTile.build.inFogTo(player.team())){
                 return nextFlowBuild = hoverTile.build;
-            }
-
-            //if the tile has a drop, display the drop
-            if((hoverTile.drop() != null && hoverTile.block() == Blocks.air) || hoverTile.wallDrop() != null || hoverTile.floor().liquidDrop != null){
-                return hoverTile;
             }
         }
 
@@ -651,13 +664,21 @@ public class PlacementFragment{
             if(hoverTile.build != null && hoverTile.build.displayable() && !hoverTile.build.inFogTo(player.team())){
                 return nextFlowBuild = hoverTile.build;
             }
-
-            //if the tile has a drop, display the drop
-            if(hoverTile.drop() != null){
-                return hoverTile;
-            }
         }
-
         return null;
     }
+
+    @Nullable
+    Tile hoveredTile(){
+        Vec2 v = topTable.stageToLocalCoordinates(Core.input.mouse());
+
+        //if the mouse intersects the table or the UI has the mouse, no hovering can occur
+        if(Core.scene.hasMouse() || topTable.hit(v.x, v.y, false) != null) return null;
+
+        //check tile being hovered over
+        Tile hoverTile = world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
+        if(hoverTile != null && !(hoverTile.build!=null && hoverTile.build.inFogTo(player.team()))) return hoverTile;
+        return null;
+    }
+
 }
