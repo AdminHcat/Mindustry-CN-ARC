@@ -335,7 +335,7 @@ public class AdvanceToolTable extends Table {
 
             String unitStatusText = "";
             for (StatusEffect effects : content.statusEffects()) {if (unitStatus.containsKey(effects)) unitStatusText += effects.emoji();}
-            table.button("状态： " + unitStatusText, showStatesEffect?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
+            table.button("状态 " + unitStatusText, showStatesEffect?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
                 showStatesEffect = !showStatesEffect;
                 rebuildTable[0].run();
             }).fillX().row();
@@ -380,7 +380,7 @@ public class AdvanceToolTable extends Table {
                 }).fillX().row();
             }
 
-            table.button("单位物品：" + (unit.stack.amount>0 ? unit.stack.item.emoji() + " ":" ") + unit.stack.amount, showItems?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
+            table.button("单位物品 " + (unit.stack.amount>0 ? unit.stack.item.emoji() + " ":" ") + unit.stack.amount, showItems?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
                 showItems = !showItems;
                 rebuildTable[0].run();
             }).fillX().row();
@@ -414,7 +414,7 @@ public class AdvanceToolTable extends Table {
             String unitPayloadText = "";
             if(unit instanceof Payloadc pay){
                 for (Payload payload:pay.payloads()){unitPayloadText += payload.content().emoji();}
-            table.button("单位背包： " + unitPayloadText, showPayload?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
+            table.button("单位背包 " + unitPayloadText, showPayload?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
                 showPayload = !showPayload;
                 rebuildTable[0].run();
             }).fillX().checked(showPayload).row();
@@ -436,10 +436,7 @@ public class AdvanceToolTable extends Table {
 
                     p.button("载入单位 " + UnitTypes.mono.emoji(), showSelectPayload?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
                         showSelectPayload=!showSelectPayload;rebuildTable[0].run();
-                    }).width(200f);
-                    p.button("载入建筑 " + Blocks.surgeWallLarge.emoji(), showPayloadBlock?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
-                        showPayloadBlock=!showPayloadBlock;rebuildTable[0].run();
-                    }).width(200f).row();
+                    }).width(300f).row();
 
                     if (showSelectPayload){
                         p.pane(list -> {
@@ -460,9 +457,13 @@ public class AdvanceToolTable extends Table {
                             }).width(200f);
                             pt.button("?",()->ui.showInfo("使用说明：携带的单位存在一个序列，每个单位可以具备特定的属性。\n[cyan]自递归[white]是指根据当前的配置生成一个单位，并储存到载荷序列上"
                                     +"\n这一单位具备所有目前设置的属性，包括buff、物品和载荷。\n合理使用自递归可以发掘无限的可能性"+
-                                    "\n[orange][警告]尚不清楚连续套娃是否会对游戏产生影响")).size(50f).row();
-                        });
+                                    "\n[orange][警告]尚不清楚连续套娃是否会对游戏产生影响")).size(50f);
+                        }).row();
                     }
+
+                    p.button("载入建筑 " + Blocks.surgeWallLarge.emoji(), showPayloadBlock?Icon.upOpen:Icon.downOpen, Styles.togglet,()->{
+                        showPayloadBlock=!showPayloadBlock;rebuildTable[0].run();
+                    }).width(300f).row();
 
                     if (showPayloadBlock){
                         p.pane(list -> {
@@ -503,7 +504,7 @@ public class AdvanceToolTable extends Table {
 
     private void resetUnitType(Unit unit, UnitType unitType){
         unit.type = unitType;
-        unit.heal();
+        unit.health = unitType.health;
         unit.shield = 0;
         unit.stack.amount = 0;
         if (unit instanceof Payloadc pay){
