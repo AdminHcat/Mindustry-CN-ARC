@@ -275,7 +275,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         });
 
         group.fill(t -> {
-            t.visible(() -> !showCancel() && block == null);
+            t.visible(() -> !showCancel() && block == null && !settings.getBool("showAdvanceToolTable"));
             t.bottom().left();
             t.button("@command", Icon.units, Styles.squareTogglet, () -> {
                 commandMode = !commandMode;
@@ -300,7 +300,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                 b.button(Icon.flipY, style, () -> flipPlans(selectPlans, false));
                 b.row();
                 b.button(Icon.rotate, style, () -> rotatePlans(selectPlans, 1));
-
+                b.button(Icon.info, style, this::showSchematicPreview).disabled(f -> lastSchematic == null || lastSchematic.file != null);
             }).margin(4f);
         });
     }

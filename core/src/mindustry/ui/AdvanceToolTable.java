@@ -86,6 +86,14 @@ public class AdvanceToolTable extends Table {
         }
         else{
             table(t -> {
+                if(mobile) {
+                    t.table(tBox -> {
+                        tBox.background(Tex.buttonEdge3);
+                        tBox.button("指挥", cleart, () -> {
+                            control.input.commandMode = !control.input.commandMode;
+                        }).width(80f);
+                    }).left().row();
+                }
                 if (showGameMode){
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
