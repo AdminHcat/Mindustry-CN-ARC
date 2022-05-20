@@ -464,7 +464,7 @@ public class AdvanceToolTable extends Table {
                             }).width(200f);
                             pt.button("?",()->ui.showInfo("使用说明：携带的单位存在一个序列，每个单位可以具备特定的属性。\n[cyan]自递归[white]是指根据当前的配置生成一个单位，并储存到载荷序列上"
                                     +"\n这一单位具备所有目前设置的属性，包括buff、物品和载荷。\n合理使用自递归可以发掘无限的可能性"+
-                                    "\n[orange][警告]尚不清楚连续套娃是否会对游戏产生影响")).size(50f);
+                                    "\n[orange][警告]可能导致地图损坏！请备份地图后再使用！")).size(50f);
                         }).row();
                     }
 
