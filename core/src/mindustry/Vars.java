@@ -38,7 +38,7 @@ import java.util.concurrent.*;
 import static arc.Core.*;
 
 public class Vars implements Loadable{
-    public static String arcVersion = "3.2.7"+ "♐";
+    public static String arcVersion = "3.3"+ "♐";
     public static int changeLogRead = 18;
     /** pr-5921  Used in blocks with selection menus such sorters for how large the menu should be */
     public static int blockSelectionRows = 5,blockSelectionColumns = 6;
