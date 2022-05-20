@@ -110,6 +110,20 @@ public class AdvanceToolTable extends Table {
                         }).width(40f);
                     }).left().row();
                 }
+                if(showUnitStat){
+                    t.table(tBox -> {
+                        tBox.background(Tex.buttonEdge3);
+                        tBox.add("单位：").left();
+                        tBox.button(UnitTypes.gamma.emoji()+"[acid]+",cleart, () -> {
+                            Unit cloneUnit = cloneExactUnit(player.unit());
+                            cloneUnit.set(player.x+10f,player.y+10f);
+                            cloneUnit.add();}).width(40f).tooltip("[acid]克隆");
+                        tBox.button(UnitTypes.gamma.emoji()+"[red]×",cleart, () -> player.unit().kill()).width(40f).tooltip("[red]自杀");
+                        tBox.button(Icon.waves,clearNonei, () -> {
+                            unitSpawnMenu();
+                        }).width(40f).tooltip("[acid]单位");
+                    }).left().row();
+                }
                 if (showTeamChange){
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
@@ -121,18 +135,6 @@ public class AdvanceToolTable extends Table {
 
                     }).left().row();
                 }
-                if(showUnitStat){
-                    t.table(tBox -> {
-                        tBox.background(Tex.buttonEdge3);
-                        tBox.add("单位：").left();
-                        tBox.button(UnitTypes.gamma.emoji()+"[acid]+",cleart, () -> player.unit().type().spawn(player.team(),player.x,player.y)).width(40f).tooltip("[acid]克隆");
-                        tBox.button(UnitTypes.gamma.emoji()+"[red]×",cleart, () -> player.unit().kill()).width(40f).tooltip("[red]自杀");
-                        tBox.button(Icon.waves,clearNonei, () -> {
-                            unitSpawnMenu();
-                        }).width(40f).tooltip("[acid]单位");
-                    }).left().row();
-                }
-
 
                 t.row();
                 t.table(mainBox -> {
@@ -149,12 +151,12 @@ public class AdvanceToolTable extends Table {
                         showResTool = !showResTool;
                         rebuild();
                     }).width(50f);
-                    mainBox.button((showResTool?"[cyan]":"[acid]")+"队伍",cleart, () -> {
-                        showTeamChange = !showTeamChange;
-                        rebuild();
-                    }).width(50f);
                     mainBox.button((showUnitStat?"[cyan]":"[acid]")+"单位",cleart, () -> {
                         showUnitStat = !showUnitStat;
+                        rebuild();
+                    }).width(50f);
+                    mainBox.button((showTeamChange?"[cyan]":"[acid]")+"队伍",cleart, () -> {
+                        showTeamChange = !showTeamChange;
                         rebuild();
                     }).width(50f);
 
@@ -488,6 +490,22 @@ public class AdvanceToolTable extends Table {
         rebuildTable[0].run();
         rebuildFabricatorTable.addCloseButton();
         rebuildFabricatorTable.show();
+    }
+
+    private Unit cloneExactUnit(Unit unit){
+        Unit reUnit = unit.type.create(unit.team);
+        reUnit.health = unit.health;
+        reUnit.shield = unit.shield;
+        reUnit.stack = unit.stack;
+
+        for (StatusEffect effects : content.statusEffects()) {
+            if(unit.getDuration(effects)>0f) reUnit.apply(effects,unit.getDuration(effects));
+        }
+
+        if (unit instanceof Payloadc pay && reUnit instanceof Payloadc rePay){
+            pay.payloads().each(payload -> rePay.addPayload(payload));
+        }
+        return reUnit;
     }
 
     private Unit cloneUnit(Unit unit){
