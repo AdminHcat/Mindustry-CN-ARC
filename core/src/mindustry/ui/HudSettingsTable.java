@@ -30,6 +30,8 @@ import static mindustry.ui.Styles.flatOver;
 public class HudSettingsTable extends Table{
     protected Seq<Setting> list = new Seq<>();
     private boolean expandList = false;
+    private int unitTransparency = Core.settings.getInt("unitTransparency");
+    private Boolean unitHide = false;
 
     private TextButton.TextButtonStyle textStyle;
 
@@ -52,7 +54,6 @@ public class HudSettingsTable extends Table{
         clearChildren();
 
         if(expandList){
-            int unitTransparency = Core.settings.getInt("unitTransparency");
 
             list.clear();
 
@@ -114,8 +115,9 @@ public class HudSettingsTable extends Table{
                         Core.settings.put("blockrenderlevel", (blockrenderlevel+1) % 3);
                     }).size(30,30).tooltip("建筑显示");
                     t.button("[cyan]兵", () ->{
-                        boolean hideUnitTransparency = Core.settings.getInt("unitTransparency") > 0;
-                        Core.settings.put("unitTransparency", hideUnitTransparency? 0:unitTransparency);
+                        unitTransparency = unitHide? unitTransparency : Core.settings.getInt("unitTransparency");
+                        unitHide = !unitHide;
+                        Core.settings.put("unitTransparency", unitHide? 0:unitTransparency);
                     }).size(30,30).tooltip("兵种显示");
                     t.button("[cyan]箱", () ->{
                         Core.settings.put("unithitbox", !Core.settings.getBool("unithitbox"));
