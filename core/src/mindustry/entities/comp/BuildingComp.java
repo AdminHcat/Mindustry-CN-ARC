@@ -1374,7 +1374,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
         table.row();
 
         //only display everything else if the team is the same LC modified
-        if(team == player.team() || (Core.settings.getBool("showOtherTeamState") || player.team().id == 255 || (Core.settings.getBool("cheating_mode") || !state.rules.pvp))){
+        if(team == player.team() || Core.settings.getBool("showOtherTeamState")){
             table.table(bars -> {
                 bars.defaults().growX().height(18f).pad(4);
 
@@ -1490,7 +1490,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
     /** Returns whether a hand cursor should be shown over this block. */
     public Cursor getCursor(){
-        if (Core.settings.getBool("showOtherTeamState") && ((Core.settings.getBool("cheating_mode") ||player.team().id == 255 || state.rules.mode() != Gamemode.pvp) )){
+        if (Core.settings.getBool("showOtherTeamState")){
             return block.configurable  ? SystemCursor.hand : SystemCursor.arrow;
         }
         else{

@@ -447,11 +447,11 @@ public class BlockRenderer{
                         Draw.z(Layer.block);
                     }
 
-                    if((build.team == player.team()|| (Core.settings.getBool("showOtherTeamState") && (Core.settings.getBool("cheating_mode") || player.team().id == 255|| state.rules.mode() != Gamemode.pvp))) && renderer.drawStatus && block.hasConsumers){
+                    if((build.team == player.team()|| Core.settings.getBool("showOtherTeamState")) && renderer.drawStatus && block.hasConsumers){
                         build.drawStatus();
                     }
 
-                    if(Core.settings.getBool("blockdisabled") && (build.team == player.team()|| Core.settings.getBool("showOtherTeamState")) && !build.enabled() && (Core.settings.getBool("cheating_mode") || player.team().id == 255|| state.rules.mode() != Gamemode.pvp) ){
+                    if(Core.settings.getBool("blockdisabled") && (build.team == player.team()|| Core.settings.getBool("showOtherTeamState")) && !build.enabled()){
                         build.drawDisabled();
                     }
 

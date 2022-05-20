@@ -468,9 +468,7 @@ public class HudFragment{
         parent.fill(t -> {
             t.name = "otherCore";
             t.left().add(otherCoreItemDisplay);
-            t.visible(() -> Core.settings.getBool("showOtherTeamResource") && ( player.team().id == 255 ||Core.settings.getBool("cheating_mode") || state.rules.mode() != Gamemode.pvp)
-            && shown
-            );
+            t.visible(() -> Core.settings.getBool("showOtherTeamResource") && shown);
         });
 
         parent.fill(t -> {

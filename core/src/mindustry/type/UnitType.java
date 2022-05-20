@@ -1219,7 +1219,7 @@ public class UnitType extends UnlockableContent{
             }
         }
 
-        if(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player && Core.settings.getBool("cheating_mode")){
+        if(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player){
             Color effectcolor = unit.controller() == Vars.player? getPlayerEffectColor(): unit.team.color;
             Drawf.target(unit.aimX, unit.aimY, 6f, effectcolor);
             Drawf.line(effectcolor,unit.x,unit.y,unit.aimX, unit.aimY);
