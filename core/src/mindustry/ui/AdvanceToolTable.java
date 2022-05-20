@@ -36,25 +36,19 @@ public class AdvanceToolTable extends Table {
     private boolean showGameMode = false,showResTool = false,showTeamChange = false, showUnitStat = false;
 
     //unitFactory
-    private UnitType spawning = UnitTypes.dagger;
     private int unitCount = 1;
     private Vec2 unitLoc = new Vec2(0, 0);
-    private Team unitTeam = Team.sharded;
     private ObjectMap<StatusEffect, Float> unitStatus = new ObjectMap();
 
-    private Item unitItems = null;
-    private int unitItemAmount = 0;
-    private boolean showSelectItems = false,showSelectPayload = false;
-    /** Seq of payloads that this unit will spawn with. */
-    private Seq<Unit> unitPayload = Seq.with();
+    private boolean showSelectPayload = false;
 
     private Unit spawnUnit = UnitTypes.emanate.create(Team.sharded);
-    Boolean showUnitSelect = false;
-    Boolean showUnitPro = true;
-    Boolean showStatesEffect = false;
-    Boolean showItems = false;
-    Boolean showPayload = false;
-    Boolean showPayloadBlock = false;
+    private Boolean showUnitSelect = false;
+    private Boolean showUnitPro = true;
+    private Boolean showStatesEffect = false;
+    private Boolean showItems = false;
+    private Boolean showPayload = false;
+    private Boolean showPayloadBlock = false;
 
 
     private TextButton.TextButtonStyle textStyle;
@@ -305,11 +299,11 @@ public class AdvanceToolTable extends Table {
                     }).row();
                     t.table(tt -> {
                         tt.add("队伍：");
-                        tt.field(String.valueOf(unitTeam.id), text -> {
-                            unitTeam = Team.get(Integer.parseInt(text));
+                        tt.field(String.valueOf(unit.team.id), text -> {
+                            unit.team = Team.get(Integer.parseInt(text));
                         }).maxTextLength(4).valid(value -> Strings.canParsePositiveInt(value)).get();
                         for(Team team:Team.baseTeams){
-                            tt.button("[#" + team.color +  "]" + team.localized(),cleart,()->{unitTeam = team;rebuildTable[0].run();}).size(30,30).color(team.color);
+                            tt.button("[#" + team.color +  "]" + team.localized(),cleart,()->{unit.team = team;rebuildTable[0].run();}).size(30,30).color(team.color);
                         }
                         tt.button("[violet]+", cleart ,() -> {
                             BaseDialog selectTeamDialog = new BaseDialog("队伍选择器");
@@ -321,8 +315,8 @@ public class AdvanceToolTable extends Table {
                                     button.getStyle().imageUpColor = team.color;
                                     button.margin(10f);
                                     button.resizeImage(40f);
-                                    button.clicked(() -> {Call.setPlayerTeamEditor(player, team);selectTeamDialog.hide();rebuildTable[0].run();});
-                                    button.update(() -> button.setChecked(player.team() == team));
+                                    button.clicked(() -> {unit.team = team;selectTeamDialog.hide();rebuildTable[0].run();});
+                                    button.update(() -> button.setChecked(unit.team == team));
                                     td.add(button);
                                     j++;
                                     if(j==5) {td.row();td.add("队伍："+j+"~"+(j+10));}
@@ -450,7 +444,7 @@ public class AdvanceToolTable extends Table {
                             int i = 0;
                             for (UnitType units : content.units()) {
                                 list.button(units.emoji(), () -> {
-                                    pay.addPayload(new UnitPayload(units.create(unitTeam)));
+                                    pay.addPayload(new UnitPayload(units.create(unit.team)));
                                     rebuildTable[0].run();
                                 }).size(50f);
                                 if (++i % 8 == 0) list.row();
@@ -475,9 +469,10 @@ public class AdvanceToolTable extends Table {
                     if (showPayloadBlock){
                         p.pane(list -> {
                             int i = 0;
-                            for (Block payBlock : content.blocks().filter(block -> block.isVisible())) {
+                            for (Block payBlock : content.blocks()) {
+                                if (!payBlock.isVisible() || !payBlock.isAccessible() || payBlock.isFloor()) continue;
                                 list.button(payBlock.emoji(), () -> {
-                                    pay.addPayload(new BuildPayload(payBlock.newBuilding().create(payBlock,unit.team)));
+                                    pay.addPayload(new BuildPayload(payBlock,unit.team));
                                     rebuildTable[0].run();
                                 }).size(50f);
                                 if (++i % 8 == 0) list.row();
