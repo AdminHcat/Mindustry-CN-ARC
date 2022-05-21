@@ -9,6 +9,7 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.ai.types.*;
+import mindustry.content.UnitTypes;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
@@ -193,27 +194,46 @@ public class OverlayRenderer{
             }
         }
 
-        Lines.stroke(2f);
-        Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
-
         if(state.hasSpawns()){
-            if(Core.settings.getBool("alwaysshowdropzone")){
-                for(Tile tile : spawner.getSpawns()){
+            Lines.stroke(2f);
+            Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
+
+            if (Core.settings.getBool("alwaysshowdropzone")) {
+                Draw.alpha(0.8f);
+                for(Tile tile : spawner.getSpawns()) {
+                    Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
+                }
+            }
+            else {
+                for(Tile tile : spawner.getSpawns()) {
+                    if (tile.within(player.x, player.y, state.rules.dropZoneRadius + spawnerMargin)) {
+                        Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - state.rules.dropZoneRadius) / spawnerMargin));
+                        Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
+                    }
+                }
+            }
+            if (Core.settings.getBool("showFlyerSpawn")) {
+                for(Tile tile : spawner.getSpawns()) {
+                    float angle = Angles.angle(world.width() / 2f, world.height() / 2f, tile.x, tile.y);
+                    float trns = Math.max(world.width(), world.height()) * Mathf.sqrt2 * tilesize;
+                    float spawnX = Mathf.clamp(world.width() * tilesize / 2f + Angles.trnsx(angle, trns), 0, world.width() * tilesize);
+                    float spawnY = Mathf.clamp(world.height() * tilesize / 2f + Angles.trnsy(angle, trns), 0, world.height() * tilesize);
+                    if (Core.settings.getBool("showFlyerSpawnLine")) {
+                        Draw.color(Color.red, 0.5f);
+                        Lines.line(tile.worldx(), tile.worldy(), spawnX, spawnY);
+                    }
+                    Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
                     Draw.alpha(0.8f);
-                    Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
+                    Lines.dashCircle(spawnX, spawnY, 5f * tilesize);
+
+                    Draw.color();
+                    Draw.alpha(0.5f);
+                    Draw.rect(UnitTypes.zenith.fullIcon, spawnX, spawnY);
                 }
             }
-            else{
-            for(Tile tile : spawner.getSpawns()){
-                if(true){
-                    Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - state.rules.dropZoneRadius) / spawnerMargin));
-                    Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
-                }
-            }
-            }
+            Draw.reset();
         }
 
-        Draw.reset();
 
         //draw selected block
         if(input.block == null && !Core.scene.hasMouse()){

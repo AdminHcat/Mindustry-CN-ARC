@@ -199,7 +199,7 @@ public class MinimapRenderer{
     }
 
     public void drawSpawns(float x, float y, float w, float h, float scaling){
-        if(!state.rules.showSpawns || !state.hasSpawns() || !state.rules.waves) return;
+        if(!(state.rules.showSpawns || Core.settings.getBool("alwaysshowdropzone")) || !state.hasSpawns() || !state.rules.waves) return;
 
         TextureRegion icon = Icon.units.getRegion();
 

@@ -476,6 +476,8 @@ public class SettingsMenuDialog extends BaseDialog{
         graphics.checkPref("blockstatus", false);
         graphics.checkPref("playerchat", true);
         graphics.checkPref("alwaysshowdropzone", false);
+        graphics.checkPref("showFlyerSpawn", false);
+        graphics.checkPref("showFlyerSpawnLine", false);
         graphics.sliderPref("lasersopacity", 100, 0, 100, 5, s -> {
             if(ui.settings != null){
                 Core.settings.put("preferredlaseropacity", s);
@@ -625,6 +627,7 @@ public class SettingsMenuDialog extends BaseDialog{
 
         if(Shaders.shield != null){
             forcehide.checkPref("animatedshields", !mobile);
+            forcehide.checkPref("staticShieldsBorder", false);
         }
 
         forcehide.checkPref("atmosphere", !mobile);
