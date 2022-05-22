@@ -264,7 +264,7 @@ public class MobileInput extends InputHandler implements GestureListener{
     public void buildUI(Group group){
 
         group.fill(t -> {
-            t.visible(this::showCancel);
+            t.visible(() ->!showCancel() && !settings.getBool("showAdvanceToolTable"));
             t.bottom().left();
             t.button("@cancel", Icon.cancel, () -> {
                 player.unit().clearBuilding();
@@ -301,6 +301,8 @@ public class MobileInput extends InputHandler implements GestureListener{
                 b.row();
                 b.button(Icon.rotate, style, () -> rotatePlans(selectPlans, 1));
                 b.button(Icon.info, style, this::showSchematicPreview).disabled(f -> lastSchematic == null || lastSchematic.file != null);
+                b.row();
+                b.button(Icon.cancel, style, ()->{});
             }).margin(4f);
         });
     }
@@ -558,6 +560,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         //handle long tap when player isn't building
         if(mode == none){
             Vec2 pos = Core.input.mouseWorld(x, y);
+            ui.hudfrag.arcSendMarkPos(pos.x, pos.y);
 
             if(commandMode){
 
@@ -1025,6 +1028,13 @@ public class MobileInput extends InputHandler implements GestureListener{
         }
 
         unit.controlWeapons(player.shooting && !boosted);
+    }
+
+    public void arcClearPlans(){
+        player.unit().clearBuilding();
+        selectPlans.clear();
+        mode = none;
+        block = null;
     }
 
     //endregion

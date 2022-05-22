@@ -57,6 +57,8 @@ public class HudFragment{
     private Table lastUnlockLayout;
     private long lastToast;
 
+    private boolean mobileMark;
+
     public void build(Group parent){
 
         //warn about guardian/boss waves
@@ -129,22 +131,27 @@ public class HudFragment{
                 t.table(tt -> {
                     tt.button("M", Styles.cleart, () -> {
                         ui.minimapfrag.toggle();
-                    }).left().size(40f);
+                    }).left().size(30f);
 
                     tt.button("+", Styles.cleart, () -> {
                         renderer.minimap.setZoom(renderer.minimap.getZoom() * 1.2f);
-                    }).left().size(40f);
+                    }).left().size(30f);
 
                     tt.button("-", Styles.cleart, () -> {
                         renderer.minimap.setZoom(renderer.minimap.getZoom() * 0.8f);
-                    }).left().size(40f);
+                    }).left().size(30f);
+
+                    tt.button( "♐", Styles.cleart, () -> {
+                        mobileMark = !mobileMark;
+                    }).left().size(30f);
+
                 }).fillX().row();
             }
 
             //position
             t.label(() -> player.unit().type.emoji() +
                 (Core.settings.getBool("position") ? player.tileX() + "," + player.tileY() + "\n" : "") +
-                            (Core.settings.getBool("mouseposition") ?  "[lightgray]" + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
+                            (Core.settings.getBool("mouseposition") ?  (mobileMark?"[red]":"[lightgray]") + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
             .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
             .touchable(Touchable.disabled)
             .style(Styles.outlineLabel)
@@ -1188,4 +1195,12 @@ public class HudFragment{
         if (maxwave > 10000) return 0;
         return maxwave + 1;
     }
+
+    public void arcSendMarkPos(float x,float y){
+        if (mobileMark){
+            Call.sendChatMessage("[ARC"+arcVersion+"]"+"标记了一处地点[red]("+(int)x/8+","+(int)y/8+")");
+            mobileMark = !mobileMark;
+        }
+    }
+
 }
