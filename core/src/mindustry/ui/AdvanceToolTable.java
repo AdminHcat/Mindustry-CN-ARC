@@ -22,6 +22,7 @@ import mindustry.gen.Payloadc;
 import mindustry.gen.Tex;
 import mindustry.gen.Unit;
 import mindustry.input.DesktopInput;
+import mindustry.input.MobileInput;
 import mindustry.type.Item;
 import mindustry.type.StatusEffect;
 import mindustry.type.UnitType;
@@ -37,6 +38,7 @@ import static mindustry.Vars.*;
 import static mindustry.content.UnitTypes.gamma;
 import static mindustry.gen.Tex.flatDownBase;
 import static mindustry.gen.Tex.pane;
+import static mindustry.input.PlaceMode.none;
 import static mindustry.ui.Styles.*;
 
 
@@ -94,6 +96,10 @@ public class AdvanceToolTable extends Table {
                         tBox.background(Tex.buttonEdge3);
                         tBox.button("指挥", cleart, () -> {
                             control.input.commandMode = !control.input.commandMode;
+                        }).width(80f);
+
+                        tBox.button("取消", cleart, () -> {
+                            if(control.input instanceof MobileInput input) input.arcClearPlans();
                         }).width(80f);
                     }).left().row();
                 }
