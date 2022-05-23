@@ -71,6 +71,7 @@ public class Build{
 
         if(Core.settings.getBool("worldCreator")){
             Tile tile = world.tile(x, y);
+            if(tile == null) return;
             if(result instanceof OverlayFloor){
                 tile.setOverlay(result);
                 return;
