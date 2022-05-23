@@ -460,7 +460,7 @@ public class AdvanceToolTable extends Table {
                                     unit.stack.amount = unit.itemCapacity();
                                 }
                                 rebuildTable[0].run();
-                            }).size(50f).left();
+                            }).size(50f).left().tooltip(item.localizedName);
                             if (++i % 6 == 0) ptt.row();
                         }
                     });
