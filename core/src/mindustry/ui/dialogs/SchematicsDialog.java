@@ -23,6 +23,8 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.type.*;
 import mindustry.ui.*;
+import mindustry.world.Block;
+import mindustry.world.blocks.production.GenericCrafter;
 
 import java.util.regex.*;
 
@@ -587,12 +589,112 @@ public class SchematicsDialog extends BaseDialog{
                     t.button("@schematic.texttag", Icon.add, () -> showNewTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                     t.button("@schematic.icontag", Icon.add, () -> showNewIconTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                 });
+                p.row();
+                p.table(t ->{
+                    t.left().defaults().fillX().height(tagh).pad(2);
+                    t.button("自动标签", Icon.add, () -> arcAutoTags(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
+                });
 
             };
 
             resized(true, rebuild[0]);
         });
         dialog.show();
+    }
+
+    void arcAutoTags(Cons<String> cons){
+        new Dialog(){{
+            closeOnBack();
+            setFillParent(true);
+
+            cont.pane(t -> {
+                resized(true, () -> {
+                    t.clearChildren();
+                    t.marginRight(19f);
+                    t.defaults().size(48f);
+
+                    int cols = (int)Math.min(20, Core.graphics.getWidth() / Scl.scl(52f));
+
+                    for(ContentType ctype : defaultContentIcons){
+                        t.row();
+                        t.image().colspan(cols).growX().width(Float.NEGATIVE_INFINITY).height(3f).color(Pal.accent);
+                        t.row();
+
+                        int i = 0;
+                        for(UnlockableContent u : content.getBy(ctype).<UnlockableContent>as()){
+                            if(!u.isHidden() && u.unlockedNow() && u.hasEmoji() && !tags.contains(u.emoji())){
+                                t.button(new TextureRegionDrawable(u.uiIcon), Styles.flati, iconMed, () -> {
+                                    String out = u.emoji() + "";
+
+                                    tags.add(out);
+                                    tagsChanged();
+
+                                    if(u instanceof Block block){
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(sBlock.block == block){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if(u instanceof Item item){
+                                        Seq<Block> blocklist = new Seq<>();
+                                        for (Block factory : content.blocks()) {
+                                            if(factory instanceof GenericCrafter crafter){
+                                                if(crafter.outputItems == null) continue;
+                                                for(ItemStack stack:crafter.outputItems){
+                                                if (stack.item == item) blocklist.add(factory);
+                                                }
+                                            }
+                                        }
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(blocklist.contains(sBlock.block)){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if(u instanceof Liquid liquid){
+                                        Seq<Block> blocklist = new Seq<>();
+                                        for (Block factory : content.blocks()) {
+                                            if(factory instanceof GenericCrafter crafter){
+                                                if(crafter.outputLiquids==null) continue;
+                                                for(LiquidStack stack: crafter.outputLiquids){
+                                                    if (stack.liquid == liquid) blocklist.add(factory);
+                                                }
+                                            }
+                                        }
+                                        for(Schematic s : schematics.all()){
+                                            s.tiles.each(sBlock -> {
+                                                if(blocklist.contains(sBlock.block)){
+                                                    addTag(s,out);
+                                                    cons.get(out);
+                                                    hide();
+                                                }
+                                            });
+                                        }
+                                    }
+
+
+                                    cons.get(out);
+
+                                    hide();
+                                });
+
+                                if(++i % cols == 0) t.row();
+                            }
+                        }
+                    }
+                });
+            });
+            buttons.button("@back", Icon.left, this::hide).size(210f, 64f);
+        }}.show();
     }
 
     void buildTags(Schematic schem, Table t){
