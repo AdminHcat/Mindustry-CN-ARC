@@ -4,10 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
-import arc.scene.ui.ImageButton;
-import arc.scene.ui.Slider;
-import arc.scene.ui.TextButton;
-import arc.scene.ui.TextField;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectMap;
 import arc.util.Strings;
@@ -38,7 +35,6 @@ import static mindustry.Vars.*;
 import static mindustry.content.UnitTypes.gamma;
 import static mindustry.gen.Tex.flatDownBase;
 import static mindustry.gen.Tex.pane;
-import static mindustry.input.PlaceMode.none;
 import static mindustry.ui.Styles.*;
 
 
@@ -302,23 +298,21 @@ public class AdvanceToolTable extends Table {
 
     private void unitFabricator(Unit unit) {
         BaseDialog rebuildFabricatorTable = new BaseDialog("单位加工车间");
-        Table table = rebuildFabricatorTable.cont;
+        Table table = new Table();
+
+        ScrollPane pane = new ScrollPane(table);
 
         Runnable[] rebuildTable = {null};
         rebuildTable[0] = () -> {
             table.clear();
 
-            Boolean isExpanded = (showUnitSelect ||showSelectPayload || showPayloadBlock)&&mobile;   //手机玩家只会打开一个界面
-
-            if(!isExpanded || showUnitSelect){
-                table.button("加工单位：" + unit.type.emoji(), showUnitSelect ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
-                    showUnitSelect = !showUnitSelect;
-                    rebuildTable[0].run();
-                }).fillX().minWidth(400f).row();
-            }
+            table.button("加工单位：" + unit.type.emoji(), showUnitSelect ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
+                showUnitSelect = !showUnitSelect;
+                rebuildTable[0].run();
+            }).fillX().minWidth(400f).row();
 
             if (showUnitSelect) {
-                table.pane(list -> {
+                table.table(list -> {
                     int i = 0;
                     for (UnitType units : content.units()) {
                         if (i++ % 8 == 0) list.row();
@@ -334,14 +328,12 @@ public class AdvanceToolTable extends Table {
                 }).row();
             }
 
-            if(!isExpanded || showUnitPro){
-                table.button("[#" + unit.team.color + "]单位属性", showUnitPro ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
-                    showUnitPro = !showUnitPro;
-                    rebuildTable[0].run();
-                }).fillX().row();
-            }
+            table.button("[#" + unit.team.color + "]单位属性", showUnitPro ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
+                showUnitPro = !showUnitPro;
+                rebuildTable[0].run();
+            }).fillX().row();
             if (showUnitPro) {
-                table.pane(t -> {
+                table.table(t -> {
                     t.table(tt -> {
                         tt.add("[red]血：");
                         tt.field(Strings.autoFixed(unit.health, 1), text -> unit.health = Float.parseFloat(text)).valid(Strings::canParsePositiveFloat);
@@ -393,16 +385,14 @@ public class AdvanceToolTable extends Table {
                 }).row();
             }
 
-            if(!isExpanded || showStatesEffect) {
-                StringBuilder unitStatusText = new StringBuilder("单位状态 ");
-                for (StatusEffect effects : content.statusEffects()) {
-                    if (unitStatus.containsKey(effects)) unitStatusText.append(effects.emoji());
-                }
-                table.button(unitStatusText.toString(), showStatesEffect ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
-                    showStatesEffect = !showStatesEffect;
-                    rebuildTable[0].run();
-                }).fillX().row();
+            StringBuilder unitStatusText = new StringBuilder("单位状态 ");
+            for (StatusEffect effects : content.statusEffects()) {
+                if (unitStatus.containsKey(effects)) unitStatusText.append(effects.emoji());
             }
+            table.button(unitStatusText.toString(), showStatesEffect ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
+                showStatesEffect = !showStatesEffect;
+                rebuildTable[0].run();
+            }).fillX().row();
 
             if (showStatesEffect) {
                 table.table(t -> {
@@ -451,7 +441,6 @@ public class AdvanceToolTable extends Table {
                 }).fillX().row();
             }
 
-            if(!isExpanded || showItems) {
             String unitItemText = "单位物品 ";
             if (unit.stack.amount > 0 && !showItems) {
                 unitItemText += unit.stack.item.emoji() + " " + unit.stack.amount;
@@ -460,7 +449,6 @@ public class AdvanceToolTable extends Table {
                 showItems = !showItems;
                 rebuildTable[0].run();
             }).fillX().row();
-            }
             if (showItems) {
                 table.table(pt -> {
                     pt.table(ptt -> {
@@ -501,17 +489,15 @@ public class AdvanceToolTable extends Table {
                 }).row();
             }
 
-            if(!isExpanded || showPayload) {
-                if (unit instanceof Payloadc pay) {
-                    StringBuilder unitPayloadText = new StringBuilder("单位背包 ");
-                    for (Payload payload : pay.payloads()) {
-                        unitPayloadText.append(payload.content().emoji());
-                    }
-                    table.button(unitPayloadText.toString(), showPayload ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
-                        showPayload = !showPayload;
-                        rebuildTable[0].run();
-                    }).fillX().checked(showPayload).row();
+            if (unit instanceof Payloadc pay) {
+                StringBuilder unitPayloadText = new StringBuilder("单位背包 ");
+                for (Payload payload : pay.payloads()) {
+                    unitPayloadText.append(payload.content().emoji());
                 }
+                table.button(unitPayloadText.toString(), showPayload ? Icon.upOpen : Icon.downOpen, Styles.togglet, () -> {
+                    showPayload = !showPayload;
+                    rebuildTable[0].run();
+                }).fillX().checked(showPayload).row();
             }
 
             if (showPayload) {
@@ -540,7 +526,7 @@ public class AdvanceToolTable extends Table {
                         }).width(300f).row();
 
                         if (showSelectPayload) {
-                            p.pane(list -> {
+                            p.table(list -> {
                                 int i = 0;
                                 for (UnitType units : content.units()) {
                                     list.button(units.emoji(), () -> {
@@ -571,7 +557,7 @@ public class AdvanceToolTable extends Table {
                         }).width(300f).row();
 
                         if (showPayloadBlock) {
-                            p.pane(list -> {
+                            p.table(list -> {
                                 int i = 0;
                                 for (Block payBlock : content.blocks()) {
                                     if (!payBlock.isVisible() || !payBlock.isAccessible() || payBlock.isFloor())
@@ -595,7 +581,10 @@ public class AdvanceToolTable extends Table {
             }).fillX().row();
             //table.add("[orange]单位加工车间。 [white]Made by [violet]Lucky Clover\n").width(400f);
         };
+
+
         rebuildTable[0].run();
+        rebuildFabricatorTable.cont.add(pane);
         rebuildFabricatorTable.addCloseButton();
         rebuildFabricatorTable.show();
     }
