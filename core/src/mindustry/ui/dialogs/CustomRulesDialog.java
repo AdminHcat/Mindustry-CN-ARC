@@ -198,6 +198,7 @@ public class CustomRulesDialog extends BaseDialog{
         check("@rules.explosions", b -> rules.damageExplosions = b, () -> rules.damageExplosions);
         check("@rules.fire", b -> rules.fire = b, () -> rules.fire);
         check("@rules.fog", b -> rules.fog = b, () -> rules.fog);
+        check("@rules.staticFog", b -> rules.staticFog = b, () -> rules.staticFog);
         check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
 
         main.button(b -> {
