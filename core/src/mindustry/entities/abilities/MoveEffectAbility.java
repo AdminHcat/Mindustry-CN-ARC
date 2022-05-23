@@ -26,6 +26,11 @@ public class MoveEffectAbility extends Ability{
         this.interval = interval;
     }
 
+    @Override
+    public String localized(){
+        return "移动特效";
+    }
+
     public MoveEffectAbility(){
     }
 

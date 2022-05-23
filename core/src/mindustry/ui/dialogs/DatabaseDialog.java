@@ -101,7 +101,7 @@ public class DatabaseDialog extends BaseDialog{
                                 ui.content.show(unlock);
                             }
                         });
-                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + "\n[gray]" + unlock.name)));
+                        image.addListener(new Tooltip(t -> t.background(Tex.button).add(unlock.localizedName + "\n[gray]" + unlock.name + (logicVars.lookupLogicId(unlock) != -1 ? " <#" + logicVars.lookupLogicId(unlock) +">": ""))));
                     }
 
                     if((++count) % cols == 0){
