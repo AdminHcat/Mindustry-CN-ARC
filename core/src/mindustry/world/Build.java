@@ -14,6 +14,9 @@ import mindustry.game.Teams.*;
 import mindustry.gen.*;
 import mindustry.world.blocks.*;
 import mindustry.world.blocks.ConstructBlock.*;
+import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.OreBlock;
+import mindustry.world.blocks.environment.OverlayFloor;
 import mindustry.world.blocks.storage.CoreBlock.*;
 
 import static mindustry.Vars.*;
@@ -65,7 +68,21 @@ public class Build{
     /** Places a ConstructBlock at this location. */
     @Remote(called = Loc.server)
     public static void beginPlace(@Nullable Unit unit, Block result, Team team, int x, int y, int rotation){
-        if(!validPlace(result, team, x, y, rotation)){
+
+        if(Core.settings.getBool("worldCreator")){
+            Tile tile = world.tile(x, y);
+            if(result instanceof OverlayFloor){
+                tile.setOverlay(result);
+                return;
+            }
+            if(result instanceof Floor floor){
+                tile.setFloor(floor);
+                return;
+            }
+        }
+
+
+        if(!Core.settings.getBool("worldCreator") && !validPlace(result, team, x, y, rotation)){
             return;
         }
 

@@ -597,7 +597,6 @@ public class SettingsMenuDialog extends BaseDialog{
         arc.sliderPref("menuFlyersCount", 0, -15, 50, 5, i -> i + "");
         arc.checkPref("menuFlyersRange",false);
         arc.checkPref("menuFlyersFollower",false);
-        arc.stringInput("arcSpecificLanguage", "Lucky!");
 
         //////////forcehide
         forcehide.addCategory("arcCDisplayBlock");
@@ -665,15 +664,9 @@ public class SettingsMenuDialog extends BaseDialog{
 
         //////////specmode
         specmode.addCategory("Specgamemode");
-        specmode.checkPref("banLogicImport",false);
         specmode.checkPref("modMode", false);
         specmode.checkPref("researchViewer",false);
-        //specmode.addCategory("ModEnhancement");
-        //specmode.checkPref("TUUI",false);
-        //specmode.checkPref("TUstartfolded",true);
-        //specmode.checkPref("TUinstakill",true);
-        //specmode.addCategory("catdevelopmode");
-        //specmode.checkPref("developmode", false);
+        specmode.checkPref("developmode", false);
         //////////cheating
         cheating.addCategory("arcWeakCheat");
         cheating.checkPref("forceIgnoreAttack",false);
@@ -684,10 +677,7 @@ public class SettingsMenuDialog extends BaseDialog{
         cheating.checkPref("showOtherTeamResource", false);
         cheating.checkPref("showOtherTeamState", false);
         cheating.checkPref("selectTeam",false);
-        cheating.checkPref("overridebuild", false);
-        cheating.checkPref("logicoverrangelink", false);
         cheating.checkPref("playerNeedShooting", false);
-        cheating.checkPref("buildCoreOverride", false);
         }
 
     }

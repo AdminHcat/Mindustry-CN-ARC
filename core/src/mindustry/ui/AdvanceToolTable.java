@@ -62,7 +62,6 @@ public class AdvanceToolTable extends Table {
     private boolean showSelectPayload = false;
     private Boolean showPayloadBlock = false;
 
-
     private TextButton.TextButtonStyle textStyle;
 
     public AdvanceToolTable() {
@@ -145,6 +144,11 @@ public class AdvanceToolTable extends Table {
                         tBox.button("沙盒", cleart, () -> {
                             state.rules.infiniteResources = !state.rules.infiniteResources;
                         }).width(50f);
+                        if(Core.settings.getBool("developmode")){
+                            tBox.button("创世神", cleart, () -> {
+                                Core.settings.put("worldCreator",!Core.settings.getBool("worldCreator"));
+                            }).width(70f);
+                        }
                     }).left().row();
                 }
                 if (showTeamChange) {
