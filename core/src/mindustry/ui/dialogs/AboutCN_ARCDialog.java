@@ -5,8 +5,8 @@ import arc.scene.ui.ScrollPane;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 
-import static mindustry.Vars.arcVersion;
-import static mindustry.Vars.changeLogRead;
+import static mindustry.Vars.*;
+import static mindustry.ui.Styles.cleart;
 
 public class AboutCN_ARCDialog extends BaseDialog{
     Seq<String> changelogs = new Seq<>();
@@ -40,10 +40,30 @@ public class AboutCN_ARCDialog extends BaseDialog{
         cont.row();
         cont.add("主负责人：[violet]Lucky_Clover").row();
         cont.add("公开发行版本："+arcVersion).row();
-        cont.add("获取最新版本，请加入[yellow]anuke的核心数据库群[white]:697981760").row();
-        cont.add("提议更新，请加入频道：Mindustry~~PVP中心").row();
+        cont.add("获取最新版本，请加入[yellow]猫猫的数据库[white]").row();
         cont.add("讨论学术端更新|提议源码|共同编辑，请加入[yellow]mindustry PVP交流群[white]:931790051[orange]不欢迎萌新，仅限大佬加入").row();
         cont.row();
+        cont.table(t->{
+            t.add("相关链接").height(30f);
+            t.button("[cyan]更新日志",cleart,()->{
+                if(!Core.app.openURI("https://github.com/CN-ARC/Mindustry-CN-ARC")){
+                    ui.showErrorMessage("@linkfail");
+                    Core.app.setClipboardText("https://github.com/CN-ARC/Mindustry-CN-ARC");
+                }
+            }).width(100f).height(30f);
+            t.button("[cyan]数据库1群",cleart,()->{
+                if(!Core.app.openURI("https://jq.qq.com/?_wv=1027&k=SIlwZafb")){
+                    ui.showErrorMessage("@linkfail");
+                    Core.app.setClipboardText("https://jq.qq.com/?_wv=1027&k=SIlwZafb");
+                }
+            }).width(100f).height(30f);
+            t.button("[cyan]数据库2群",cleart,()->{
+                if(!Core.app.openURI("https://jq.qq.com/?_wv=1027&k=OTtencaZ")){
+                    ui.showErrorMessage("@linkfail");
+                    Core.app.setClipboardText("https://jq.qq.com/?_wv=1027&k=OTtencaZ");
+                }
+            }).width(100f).height(30f);
+        });
 
         cont.row();
         for(String log : changelogs){
