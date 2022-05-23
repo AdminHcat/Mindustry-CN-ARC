@@ -399,6 +399,7 @@ public class AdvanceToolTable extends Table {
                     rebuildTable[0].run();
                 }).fillX().row();
             }
+
             if (showStatesEffect) {
                 table.table(t -> {
                     t.table(list -> {
