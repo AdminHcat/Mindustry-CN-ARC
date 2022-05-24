@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
+import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectMap;
@@ -20,23 +21,16 @@ import mindustry.editor.WaveInfoDialog;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.input.DesktopInput;
-import mindustry.input.MobileInput;
-import mindustry.net.Packets;
-import mindustry.type.Item;
-import mindustry.type.StatusEffect;
-import mindustry.type.UnitType;
-import mindustry.ui.dialogs.BaseDialog;
-import mindustry.world.Block;
-import mindustry.world.blocks.payloads.BuildPayload;
-import mindustry.world.blocks.payloads.Payload;
-import mindustry.world.blocks.payloads.UnitPayload;
-import mindustry.world.*;
 
-import java.util.Objects;
+import mindustry.net.Packets;
+
+import mindustry.type.StatusEffect;
+
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
 import static mindustry.content.UnitTypes.gamma;
+import static mindustry.content.UnitTypes.poly;
 import static mindustry.gen.Tex.*;
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
@@ -54,11 +48,31 @@ public class AuxilliaryTable extends Table {
     private ImageButton.ImageButtonStyle imgStyle, imgToggleStyle;
     private TextButton.TextButtonStyle textStyle, textStyle2, textStyle3;
 
-    private MapInfoDialog mapInfoDialog;
-    private WaveInfoDialog waveInfoDialog;
+    private ImageButton.ImageButtonStyle ImageHander;
+    private TextButton.TextButtonStyle textHander;
+
+    private MapInfoDialog mapInfoDialog = new MapInfoDialog();
+    private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
 
 
     public AuxilliaryTable() {
+
+        textHander = new TextButton.TextButtonStyle(cleart){{
+            up = none;
+            over = accentDrawable;
+            down = none;
+            checked = underlineWhite;
+        }};
+
+        ImageHander = new ImageButton.ImageButtonStyle(clearNonei){{
+                up = none;
+                over = accentDrawable;
+                down = none;
+                checked = underlineWhite;
+            }};
+
+        imgStyle = clearNonei;
+
         textStyle = new TextButton.TextButtonStyle() {{
             down = flatOver;
             up = pane;
@@ -107,24 +121,26 @@ public class AuxilliaryTable extends Table {
 
     void buildHide(){
         clear();
-        button("[cyan]辅助器", textStyle2, this::toggle).width(50f).height(35);
+        button("[cyan]辅助器", textHander, this::toggle).width(80f).height(35);
     }
 
     void buildShow() {
-
+        clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textStyle2, this::toggle).width(50f).height(35);
-        hander.button(Icon.map, imgStyle, () -> showns[0] = !showns[0]).size(50f).tooltip("地图信息");
-        hander.button(Icon.waves, imgStyle, () -> showns[1] = !showns[1]).size(50f).tooltip("波次信息");
-        hander.button(gamma.emoji(), textStyle2, () -> showns[2] = !showns[2]).size(50f).tooltip("玩家AI");
-        hander.button(gamma.emoji(), textStyle2, () -> showns[3] = !showns[3]).size(50f).tooltip("控制器");
-        hander.button(gamma.emoji(), textStyle2, () -> showns[4] = !showns[4]).size(50f).tooltip("<手机>控制器").visible(mobile);
+        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).fillX();
+        hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(50f).tooltip("地图信息");
+        hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(50f).tooltip("波次信息");
+        hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(50f).tooltip("玩家AI");
+        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).size(50f).tooltip("控制器");
+        hander.button(gamma.emoji(), textHander, () -> showns[4] = !showns[4]).size(50f).tooltip("<手机>控制器").visible(mobile);
+
+        row();
 
         Table main = table().fillX().get();
 
         main.table(body -> {
-            body.background(black6);
+            //body.background(black6);
 
             /* 地图信息界面 */
             body.collapser(t -> {
@@ -246,9 +262,22 @@ public class AuxilliaryTable extends Table {
 
             /* 控制器 */
             body.collapser(t -> {
+                t.button(Icon.refreshSmall, imgStyle, () -> {
+                    Call.sendChatMessage("/sync");
+                }).height(buttonSize).growX();
+
+                t.button(new TextureRegionDrawable(poly.uiIcon), imgStyle, imgSize, () -> {
+                    player.buildDestroyedBlocks();
+                }).height(buttonSize).growX();
+
+                t.button(new TextureRegionDrawable(gamma.uiIcon), imgStyle, imgSize, () -> {
+                    ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
+                }).height(buttonSize).growX();
+
                 t.button(Icon.modeAttack, imgToggleStyle, imgSize, () -> {
-                    settings.put("autotarget", !settings.getBool("autotarget"));
-                }).height(buttonSize).growX().checked(settings.getBool("autotarget")).tooltip("自动瞄准");
+                    boolean at = settings.getBool("autotarget");
+                    settings.put("autotarget", !at);
+                }).height(buttonSize).growX().checked(settings.getBool("autotarget"));
 
             }, () -> showns[3]).left();
 
@@ -256,6 +285,11 @@ public class AuxilliaryTable extends Table {
 
             /* <手机>控制器 */
             body.collapser(t -> {
+                t.button(Icon.eyeSmall, imgToggleStyle, () -> {
+                    boolean view = settings.getBool("viewMode");
+                    if(view) Core.camera.position.set(player);
+                    settings.put("viewMode", !view);
+                }).height(buttonSize).growX().checked(settings.getBool("viewMode"));
 
             }, () -> showns[4]).left();
 

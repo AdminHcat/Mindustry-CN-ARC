@@ -6,6 +6,7 @@ import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
+import arc.math.geom.Vec2;
 import arc.scene.*;
 import arc.scene.ui.*;
 import arc.scene.ui.Label.*;
@@ -14,6 +15,8 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
+import mindustry.arcModule.arcMarker;
+import mindustry.game.SpawnGroup;
 import mindustry.gen.*;
 import mindustry.input.*;
 import mindustry.ui.*;
@@ -40,6 +43,8 @@ public class ChatFragment extends Table{
     private int historyPos = 0;
     private int scrollPos = 0;
     public float arcMarkX = 0,arcMarkY = 0;
+    /** Mark. */
+    public Seq<arcMarker> marker = new Seq<>();
 
     public ChatFragment(){
         super();
@@ -300,12 +305,16 @@ public class ChatFragment extends Table{
                         break;
                     }
                 }
-            } catch (Exception e) {
-            }
-            arcMarkX = x;
-            arcMarkY = y;
-            Effect showEffect = Fx.arcMarker;
-            showEffect.at(x * tilesize, y * tilesize, Color.red);
+            } catch (Exception e) {}
+
+            arcMarker newMarker = new arcMarker(){{
+                type = arcMarker.markType.MARK;
+                time = Time.time;
+            }};
+            newMarker.loc = new Vec2(x * tilesize, y * tilesize);
+            newMarker.showEffect();
+            marker.add(newMarker);
+
         } else if (message.contains("发起集合")) {
             int strLength = message.length();
             float x = 0;
@@ -329,10 +338,14 @@ public class ChatFragment extends Table{
                     }
                 }
             }catch (Exception e) {}
-            arcMarkX = x;
-            arcMarkY = y;
-            Effect showEffect = Fx.arcGatherMarker;
-            showEffect.at(x * tilesize, y * tilesize, Color.red);
+
+            arcMarker newMarker = new arcMarker(){{
+                type = arcMarker.markType.GATHER;
+                time = Time.time;
+            }};
+            newMarker.loc = new Vec2(x * tilesize, y * tilesize);
+            newMarker.showEffect();
+            marker.add(newMarker);
         }
     }
 

@@ -43,6 +43,7 @@ public class HudFragment{
     private CoreItemsDisplay coreItems = new CoreItemsDisplay();
     private OtherCoreItemDisplay otherCoreItemDisplay = new OtherCoreItemDisplay();
     private MI2ToolsTable mi2ToolsTable = new MI2ToolsTable();
+    private AuxilliaryTable auxilliaryTable = new AuxilliaryTable();
     private AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     private HudSettingsTable hudSettingsTable = new HudSettingsTable();
 
@@ -101,7 +102,8 @@ public class HudFragment{
 
         Events.on(WorldLoadEvent.class,e->{
             otherCoreItemDisplay.updateTeamList();
-            mi2ToolsTable.rebuild();
+            //mi2ToolsTable.rebuild();
+            auxilliaryTable.toggle();
         });
 
         //paused table
@@ -357,11 +359,21 @@ public class HudFragment{
             editorMain.visible(() -> shown && (state.isEditor() || Core.settings.getBool("selectTeam")));
 
             //map info/nextwave display
+            /*
             if(Core.settings.getBool("showMI2toolbox")){
                 cont.table(infoWave -> {
                     infoWave.name = "map/wave";
                     infoWave.left().top().visible(() -> shown);
                     infoWave.add(mi2ToolsTable);
+                }).left().top();
+            }*/
+
+            //map info/nextwave display
+            if(Core.settings.getBool("showMI2toolbox")){
+                cont.table(infoWave -> {
+                    infoWave.name = "map/wave";
+                    infoWave.left().top().visible(() -> shown);
+                    infoWave.add(auxilliaryTable);
                 }).left().top();
             }
 
