@@ -46,7 +46,7 @@ public class HudFragment{
     private AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     private HudSettingsTable hudSettingsTable = new HudSettingsTable();
 
-    private Boolean arcShowObjectives = false;
+    private Boolean arcShowObjectives = false, hideObjectives = true;
 
     private boolean editorMainShow = true;
 
@@ -973,8 +973,6 @@ public class HudFragment{
     private Table makeStatusTableArc(){
         Table table = new Table(Tex.wavepane);
 
-        table.touchable = Touchable.enabled;
-
         table.name = "waves";
 
         table.marginTop(0).marginBottom(4).marginLeft(4);
@@ -1034,16 +1032,27 @@ public class HudFragment{
                         var first = state.rules.objectives.first();
                         String text = first.text();
                         if (text != null) {
+                            if (hideObjectives){
+                                return state.rules.objectives.first().text().substring(0,20) + "...";
+                            }
                             return state.rules.objectives.first().text();
                         }
                     }
                     //mission overrides everything
                     if (state.rules.mission != null) {
+                        if (hideObjectives){
+                            return state.rules.mission.substring(0,20) + "...";
+                        }
                         return state.rules.mission;
                     }
                     return "任务读取失败";
                 }
                 ).growX().pad(8f);
+                table.clicked(() -> {
+                    hideObjectives = !hideObjectives;
+                    rebuild[0].run();
+                });
+
             } else {
                 table.table(t -> {
                     t.add(new Bar(
