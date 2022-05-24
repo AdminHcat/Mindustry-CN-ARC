@@ -1176,7 +1176,6 @@ public class UnitType extends UnlockableContent{
             float sectorRad = 0.14f, rotateSpeed = 0.5f;
             int sectors = 5;
 
-
             Lines.stroke(Lines.getStroke() * curStroke);
 
             Draw.z(Layer.shields + 6.5f);
@@ -1188,7 +1187,7 @@ public class UnitType extends UnlockableContent{
             if(curStroke > 0){
                 for(int i = 0; i < sectors; i++){
                     float rot = unit.rotation + i * 360f / sectors + Time.time * rotateSpeed;
-                    Lines.arc(unit.x, unit.y, maxRange, sectorRad, rot);
+                    Lines.arc(unit.x, unit.y, maxRange, sectorRad, rot,(int)(50 + maxRange/10));
                 }
             }
 
@@ -1202,21 +1201,19 @@ public class UnitType extends UnlockableContent{
             Draw.alpha((float)Core.settings.getInt("unitweapon_range") / 100f);
             Lines.dashCircle(unit.x, unit.y, maxRange);
         }else if(draw_minunithealthbar){
-            boolean canHit = player.unit().isFlying() ? targetAir : targetGround;
-            float dst = player.unit().dst(unit.x,unit.y) ;
             float alertRange = (float)Core.settings.getInt("unitAlertRange");
-            if (  alertRange > 0 && (alertRange >= 30f ||
-                    (unit.team != player.team() && canHit && !(dst > (range+ alertRange * tilesize))&& player.unit().health>0f))){
-                //show unit weapon by LC
-                Draw.color(unit.team.color);
-                Draw.alpha(1f);
-                Lines.dashCircle(unit.x, unit.y, maxRange);
-            }
-            else{
-                Draw.color(unit.team.color);
-                Draw.alpha((float) Core.settings.getInt("unitweapon_range") / 100f);
-                Lines.dashCircle(unit.x, unit.y, maxRange);
-            }
+            boolean turretAlert = alertRange > 0 && (alertRange >= 30f ||
+                    ((!player.unit().isNull() && player.unit().targetable(unit.team)) || (control.input.commandMode && control.input.selectedUnits.size>0)));
+            boolean canHitPlayer = player.unit().isFlying() ? targetAir : targetGround;
+            boolean canHitCommand = control.input.commandMode && (control.input.selectedUnits.size>0);
+            boolean showHitPlayer = unit.team != player.team() && canHitPlayer && (player.unit().dst(unit.x,unit.y) <= (maxRange+ (float)Core.settings.getInt("unitAlertRange") * tilesize));
+            boolean showHitCommand = unit.team != player.team() && canHitCommand &&
+                    Core.input.mouseWorld().dst(unit.x,unit.y) <= (maxRange+ (float)Core.settings.getInt("unitAlertRange") * tilesize);
+
+            Draw.color(unit.team.color);
+            float unitRangeAlpha = turretAlert &&(showHitPlayer||showHitCommand)? 1f: Core.settings.getInt("unitweapon_range") / 100f;
+            Draw.alpha(unitRangeAlpha);
+            Lines.dashCircle(unit.x, unit.y, maxRange);
         }
 
         if(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player){

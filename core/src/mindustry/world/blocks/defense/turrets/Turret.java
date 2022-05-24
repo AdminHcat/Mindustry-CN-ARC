@@ -346,9 +346,16 @@ public class Turret extends ReloadTurret{
                 Draw.reset();
             }
             if ( (hasAmmo()) && (!state.rules.pvp || team == player.team()) ){
-                if ((float)Core.settings.getInt("turretAlertRange") > 0f && !player.unit().isNull()){
-                    boolean canHit = player.unit().isFlying() ? targetAir : targetGround;
-                    if (team != player.team() && canHit && (player.unit().dst(x,y) <= (range()+ (float)Core.settings.getInt("turretAlertRange") * tilesize))){
+                boolean turretAlert = Core.settings.getInt("turretAlertRange") > 0f &&
+                        ((!player.unit().isNull() && player.unit().targetable(team)) || (control.input.commandMode && control.input.selectedUnits.size>0));
+                if (turretAlert){
+                    boolean canHitPlayer = player.unit().isFlying() ? targetAir : targetGround;
+                    boolean canHitCommand = control.input.commandMode && (control.input.selectedUnits.size>0);
+                    boolean showHitPlayer = team != player.team() && canHitPlayer && (player.unit().dst(x,y) <= (range()+ (float)Core.settings.getInt("turretAlertRange") * tilesize));
+                    boolean showHitCommand = team != player.team() && canHitCommand &&
+                            Core.input.mouseWorld().dst(x,y) <= (range()+ (float)Core.settings.getInt("turretAlertRange") * tilesize);
+
+                    if (showHitPlayer || showHitCommand){
                         Draw.color(team.color, 0.8f);
                         Lines.circle(x, y, range());
                     }
