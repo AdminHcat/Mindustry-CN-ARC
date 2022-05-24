@@ -57,19 +57,19 @@ public class AuxilliaryTable extends Table {
 
     public AuxilliaryTable() {
 
-        textHander = new TextButton.TextButtonStyle(cleart){{
+        textHander = new TextButton.TextButtonStyle(fullTogglet){{
+            up = none;
+            over = accentDrawable;
+            down = underlineWhite;
+            checked = underlineWhite;
+        }};
+
+        ImageHander = new ImageButton.ImageButtonStyle(clearNonei){{
             up = none;
             over = accentDrawable;
             down = none;
             checked = underlineWhite;
         }};
-
-        ImageHander = new ImageButton.ImageButtonStyle(clearNonei){{
-                up = none;
-                over = accentDrawable;
-                down = none;
-                checked = underlineWhite;
-            }};
 
         imgStyle = clearNonei;
 
@@ -121,14 +121,14 @@ public class AuxilliaryTable extends Table {
 
     void buildHide(){
         clear();
-        button("[cyan]辅助器", textHander, this::toggle).width(80f).height(35);
+        button("[cyan]辅助器", textHander, this::toggle).width(80f).height(35).tooltip("开启辅助器");
     }
 
     void buildShow() {
         clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).fillX();
+        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).fillX().tooltip("关闭辅助器");
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(50f).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(50f).tooltip("波次信息");
         hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(50f).tooltip("玩家AI");
@@ -271,7 +271,7 @@ public class AuxilliaryTable extends Table {
                 }).height(buttonSize).growX();
 
                 t.button(new TextureRegionDrawable(gamma.uiIcon), imgStyle, imgSize, () -> {
-                    ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
+                    if (ui.chatfrag.marker.size>0) ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
                 }).height(buttonSize).growX();
 
                 t.button(Icon.modeAttack, imgToggleStyle, imgSize, () -> {

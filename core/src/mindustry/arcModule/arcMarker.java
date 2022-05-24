@@ -1,22 +1,12 @@
 package mindustry.arcModule;
 
 import arc.*;
-import arc.func.*;
 import arc.graphics.Color;
-import arc.math.*;
 import arc.math.geom.*;
-import arc.struct.*;
-import arc.util.*;
-import mindustry.annotations.Annotations.*;
 import mindustry.content.*;
-import mindustry.core.*;
 import mindustry.entities.*;
-import mindustry.game.EventType.*;
-import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.input.DesktopInput;
-import mindustry.type.*;
-import mindustry.world.*;
 
 import static mindustry.Vars.*;
 
@@ -31,11 +21,11 @@ public class arcMarker{
     public void showEffect(){
         if (type == markType.MARK) {
             Effect showEffect = Fx.arcMarker;
-            showEffect.at(loc.x, loc.y, Color.red);
+            showEffect.arcCreate(loc.x, loc.y,0f, Color.red,null);
         }
         else if(type == markType.GATHER){
             Effect showEffect = Fx.arcGatherMarker;
-            showEffect.at(loc.x, loc.y, Color.red);
+            showEffect.arcCreate(loc.x, loc.y,0f, Color.red,null);
         }
     }
 
