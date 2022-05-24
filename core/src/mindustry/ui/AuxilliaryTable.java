@@ -30,6 +30,7 @@ import mindustry.world.Block;
 import mindustry.world.blocks.payloads.BuildPayload;
 import mindustry.world.blocks.payloads.Payload;
 import mindustry.world.blocks.payloads.UnitPayload;
+import mindustry.world.*;
 
 import java.util.Objects;
 
@@ -200,6 +201,24 @@ public class AuxilliaryTable extends Table {
                             if(amount > 0){
                                 float shield = group.getShield(curInfoWave);
                                 StatusEffect effect = group.effect;
+
+                                StringBuilder waveUI = new StringBuilder();
+                                waveUI.append("[cyan]单位：[white]").append(group.type.localizedName).append(group.type.uiIcon).append("\n");
+                                waveUI.append("[cyan]波次：[white]").append(group.begin).append("+").append(group.spacing).append("×n").append("->").append(group.end).append("\n");
+                                waveUI.append("[cyan]数量：[white]").append(group.unitAmount).append("+").append(group.unitScaling).append("×n").append("->").append(group.max).append("\n");
+                                waveUI.append("[cyan]护盾：[white]").append(group.shields).append("+").append(group.shieldScaling).append("×n").append("\n");
+                                if(group.effect!=null ||group.items!=null){
+                                    waveUI.append("[cyan]属性：[white]");
+                                    if (group.effect!=null) waveUI.append(group.effect.uiIcon);
+                                    if (group.items!=null) waveUI.append(group.items.item.uiIcon).append(":").append(group.items.amount);
+                                    waveUI.append("\n");
+                                }
+                                if(group.payloads!=null){
+                                    waveUI.append("[cyan]载荷：[white]");
+                                    group.payloads.each(payload-> waveUI.append(payload.uiIcon));
+                                    waveUI.append("\n");
+                                }
+
                                 waveInfo.table(groupT -> {
                                     groupT.image(group.type.uiIcon).size(waveImagSize).row();
 
@@ -209,7 +228,11 @@ public class AuxilliaryTable extends Table {
                                     if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), waveFontScl).center();
                                     groupT.row();
                                     if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(waveImagSize);
-                                }).padLeft(4).top();
+                                }).padLeft(4).top().tooltip(waveUI.toString());
+
+
+
+
                             }
                         }
                     });
