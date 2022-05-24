@@ -262,17 +262,13 @@ public class Weapon implements Cloneable{
         Draw.xscl = 1f;
 
         //display target line for every weaponmount by MI2
-        if (draw_minunithealthbar && Core.settings.getBool("unitWeaponTargetLine") && !(Core.settings.getInt("superUnitEffect")>0 && unit.controller() instanceof Player) && !Core.settings.getBool("superUnitTarget")){
+        if (draw_minunithealthbar && Core.settings.getBool("unitWeaponTargetLine")){
             if(mount.aimX !=0 && mount.aimY != 0  && Mathf.len(mount.aimX - wx, mount.aimY - wy) <= 1200f){
                 Lines.stroke(1f);
-                if(mount.shoot){
-                    Draw.color(1f, 0.2f, 0.2f, 0.8f);
-                    Lines.line(wx, wy, mount.aimX, mount.aimY);
-                } else {
-                    Draw.color(1f, 1f, 1f, 0.3f);
-                    Lines.line(wx, wy, mount.aimX, mount.aimY);
-                }
-                Lines.dashCircle(mount.aimX, mount.aimY, 8);
+                Draw.color(unit.team.color);
+                Draw.alpha(mount.shoot?0.8f:0.3f);
+                Lines.line(wx, wy, mount.aimX, mount.aimY);
+                if(!(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player)) Lines.dashCircle(mount.aimX, mount.aimY, 8);
                 Draw.reset();
 
             }
