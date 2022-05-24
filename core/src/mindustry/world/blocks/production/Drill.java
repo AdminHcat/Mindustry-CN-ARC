@@ -349,12 +349,19 @@ public class Drill extends Block{
                 Draw.color();
             }
             if(Core.settings.getBool("arcdrillmode") && dominantItem != null){
-                float dx = x - size * tilesize/2f, dy = y - size * tilesize/2f;
-                float dms = iconSmall / 4f;
-                Draw.mixcol(Color.darkGray, 1f);
-                Draw.rect(dominantItem.fullIcon, dx+4, dy+3, dms, dms);
+                float dx = x - size * tilesize/2f + 5, dy = y - size * tilesize/2f + 5;
+                float iconSize = 5f;
+                Draw.rect(dominantItem.fullIcon, dx, dy, iconSize, iconSize);
                 Draw.reset();
-                Draw.rect(dominantItem.fullIcon, dx+4, dy+4, dms, dms);
+
+                float eff = Mathf.lerp(0,1,Math.min(1f, (float)dominantItems/(size * size)));
+                if (eff<0.9f){
+                    Draw.alpha(0.5f);
+                    Draw.color(dominantItem.color);
+                    Lines.stroke(1f);
+                    Lines.arc(dx, dy, iconSize * 0.75f, eff);
+                }
+
             }
         }
 

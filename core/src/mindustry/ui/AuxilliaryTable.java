@@ -230,9 +230,6 @@ public class AuxilliaryTable extends Table {
                                     if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(waveImagSize);
                                 }).padLeft(4).top().tooltip(waveUI.toString());
 
-
-
-
                             }
                         }
                     });
