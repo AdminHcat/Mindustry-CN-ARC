@@ -2389,4 +2389,15 @@ public class Fx{
         stroke(data.region.height * scl);
         line(data.region, data.a.x + ox, data.a.y + oy, data.b.x + ox, data.b.y + oy, false);
     }).layer(Layer.groundUnit + 5f);
+    /*
+    private static boolean inBorder(float x, float y){
+        //确认坐标点是否在屏幕内
+        if(inBorder(player.x, player.y)){
+            Float dis = player.dst(e.x,e.y);
+            Float radius = (float)Math.log(dis) * tilesize;
+            color(Color.red);
+            Drawf.arrow(player.x, player.y, player.x + (e.x - player.x) / dis * radius, player.y + (e.y - player.y) / dis * radius, radius * 0.9f, 4f, Pal.command);
+        }
+        return Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(x, y, 50f));
+    }*/
 }

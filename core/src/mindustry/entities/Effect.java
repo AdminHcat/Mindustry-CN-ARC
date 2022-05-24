@@ -159,6 +159,21 @@ public class Effect{
         }
     }
 
+    public void arcCreate(float x, float y, float rotation, Color color, Object data){
+        //无视屏幕限制创建标记特效
+
+        if(!initialized){
+            initialized = true;
+            init();
+        }
+
+        if(startDelay <= 0f){
+            add(x, y, rotation, color, data);
+        }else{
+            Time.run(startDelay, () -> add(x, y, rotation, color, data));
+        }
+    }
+
     protected void add(float x, float y, float rotation, Color color, Object data){
         var entity = EffectState.create();
         entity.effect = this;
