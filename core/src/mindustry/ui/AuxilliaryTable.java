@@ -3,14 +3,9 @@ package mindustry.ui;
 import arc.Core;
 import arc.Events;
 import arc.graphics.Color;
-import arc.math.Mathf;
-import arc.math.geom.Vec2;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.Table;
-import arc.struct.ObjectMap;
-import arc.util.Strings;
-import arc.util.Tmp;
 import mindustry.Vars;
 import mindustry.ai.types.BuilderAI;
 import mindustry.ai.types.DefenderAI;
@@ -24,9 +19,6 @@ import mindustry.editor.WaveInfoDialog;
 import mindustry.entities.units.AIController;
 import mindustry.game.*;
 import mindustry.gen.*;
-import mindustry.input.DesktopInput;
-
-import mindustry.net.Packets;
 
 import mindustry.type.StatusEffect;
 
@@ -34,7 +26,6 @@ import mindustry.type.StatusEffect;
 import static arc.Core.settings;
 import static mindustry.Vars.*;
 import static mindustry.content.UnitTypes.*;
-import static mindustry.gen.Tex.*;
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
 
@@ -43,15 +34,11 @@ public class AuxilliaryTable extends Table {
     private boolean show = true;
     private boolean[] showns = {false, false, false, false ,mobile};
     public int waveOffset = 0;
-    private float fontScl = 0.6f;
-    private float buttonSize = 30f;
     private float imgSize = 33f;
 
     private float handerSize = 40f;
     private float tableSize = 20f;
 
-    private ImageButton.ImageButtonStyle imgStyle, imgToggleStyle;
-    private TextButton.TextButtonStyle textStyle, textStyle2, textStyle3;
 
     private ImageButton.ImageButtonStyle ImageHander,ImageHanderNC;
     private TextButton.TextButtonStyle textBasic,textHander,textHanderNC;
@@ -60,6 +47,8 @@ public class AuxilliaryTable extends Table {
     private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
 
     private AIController playerAI;
+
+    private boolean playerBoost = false;
 
     public AuxilliaryTable() {
 
@@ -100,44 +89,6 @@ public class AuxilliaryTable extends Table {
             down = none;
         }};
 
-        imgStyle = clearNonei;
-
-        textStyle = new TextButton.TextButtonStyle() {{
-            down = flatOver;
-            up = pane;
-            over = flatDownBase;
-            font = Fonts.def;
-            fontColor = Color.white;
-            disabledFontColor = Color.gray;
-
-        }};
-        imgToggleStyle = new ImageButton.ImageButtonStyle(imgStyle){{
-            up = none;
-            over = underlineWhite;
-            down = underlineWhite;
-            checked = underlineWhite;
-        }};
-
-        textStyle = new TextButton.TextButtonStyle(logict){{
-            up = underlineWhite;
-            over = underlineWhite;
-            down = underlineWhite;
-        }};
-
-        textStyle2 = new TextButton.TextButtonStyle(flatBordert){{
-            up = underlineWhite;
-            over = accentDrawable;
-            down = accentDrawable;
-            checked = underlineWhite;
-        }};
-
-        textStyle3 = new TextButton.TextButtonStyle(flatBordert){{
-            up = none;
-            over = accentDrawable;
-            down = accentDrawable;
-            checked = underlineWhite;
-        }};
-
         Events.run(EventType.Trigger.update, () -> {
             if (playerAI != null) {
                 playerAI.unit(player.unit());
@@ -150,8 +101,15 @@ public class AuxilliaryTable extends Table {
 
     public void toggle(){
         show = !show;
+        playerBoost = false;
         if(show) buildShow();
         else buildHide();
+        if(mobile){
+            Events.run(EventType.Trigger.update, () -> {
+                if(!player.dead() && (player.unit().type.flying || !player.unit().type.canBoost))playerBoost = false;
+                else player.boosting = playerBoost;
+            });
+        }
     }
 
     void buildHide(){
@@ -164,11 +122,11 @@ public class AuxilliaryTable extends Table {
         Table hander = table().fillX().get();
 
         hander.button("[acid]辅助器", textHander, this::toggle).width(80f).height(handerSize).tooltip("关闭辅助器");
-        hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(handerSize).tooltip("地图信息");
-        hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(handerSize).tooltip("波次信息");
-        hander.button(Blocks.microProcessor.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
-        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
-        hander.button(gamma.emoji(), textHander, () -> showns[4] = !showns[4]).size(handerSize).tooltip("<手机>控制器").visible(mobile);
+        hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).checked(showns[0]).size(handerSize).tooltip("地图信息");
+        hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).checked(showns[1]).size(handerSize).tooltip("波次信息");
+        hander.button(Blocks.microProcessor.emoji(), textHander, () -> showns[2] = !showns[2]).checked(showns[2]).size(handerSize).tooltip("玩家AI");
+        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).checked(showns[3]).size(handerSize).tooltip("控制器");
+        hander.button(emanate.emoji(), textHander, () -> showns[4] = !showns[4]).checked(showns[4]).size(handerSize).tooltip("<手机>控制器").visible(true);
 
         row();
 
@@ -207,13 +165,13 @@ public class AuxilliaryTable extends Table {
                         waveOffset = 0;
                     }).size(handerSize);
 
-                    buttons.button(Icon.link, ImageHander, handerSize, () -> {
+                    buttons.button("♐", textHanderNC, () -> {
                         String message = arcShareWaveInfo(state.wave + waveOffset);
                         int seperator = 145;
                         for(int i = 0; i < message.length() / (float)seperator; i++){
                             Call.sendChatMessage(message.substring(i * seperator, Math.min(message.length(), (i + 1) * seperator)));
                         }
-                    }).disabled(!state.rules.waves && !settings.getBool("arcShareWaveInfo"));
+                    }).size(handerSize).disabled(!state.rules.waves && !settings.getBool("arcShareWaveInfo"));
 
                 }).left().row();
 
@@ -294,18 +252,22 @@ public class AuxilliaryTable extends Table {
             body.collapser(t -> {
                 t.button(gamma.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
 
-                t.button(new TextureRegionDrawable(Blocks.buildTower.uiIcon), ImageHanderNC, imgSize, () -> {
+                t.button(Blocks.buildTower.emoji(), textHanderNC, () -> {
                     player.buildDestroyedBlocks();
-                }).tooltip("在建造列表加入被摧毁建筑");
+                }).size(handerSize).tooltip("在建造列表加入被摧毁建筑");
 
-                t.button(new TextureRegionDrawable(gamma.uiIcon), ImageHanderNC, imgSize, () -> {
+                t.button(Blocks.message.emoji(), textHanderNC, () -> {
                     if (ui.chatfrag.marker.size>0) ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
-                }).tooltip("锁定上个标记点");
-
+                }).size(handerSize).tooltip("锁定上个标记点");
+                /*
                 t.button(Icon.modeAttack, ImageHanderNC, imgSize, () -> {
                     boolean at = settings.getBool("autotarget");
                     settings.put("autotarget", !at);
                 }).tooltip("自动攻击").checked(settings.getBool("autotarget"));
+                */
+                t.button(vela.emoji(), textHander, () -> {
+                    playerBoost = !playerBoost;
+                }).tooltip("助推").size(handerSize).checked(playerBoost);
 
             }, () -> showns[3]).left();
 
@@ -313,11 +275,25 @@ public class AuxilliaryTable extends Table {
 
             /* <手机>控制器 */
             body.collapser(t -> {
-                t.button(Icon.eyeSmall, imgToggleStyle, () -> {
+                t.button(emanate.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("手机控制器");
+
+                t.button(Icon.units, ImageHanderNC,imgSize, () -> {
+                    control.input.commandMode = !control.input.commandMode;
+                }).tooltip("指挥模式").checked(control.input.commandMode);
+
+                t.button(StatusEffects.unmoving.emoji(), textHanderNC, () -> {
                     boolean view = settings.getBool("viewMode");
                     if(view) Core.camera.position.set(player);
                     settings.put("viewMode", !view);
-                }).height(buttonSize).growX().checked(settings.getBool("viewMode"));
+                }).size(handerSize).tooltip("原地静止").checked(settings.getBool("viewMode"));
+
+                t.button(Icon.up, ImageHanderNC,imgSize, () -> {
+                    control.input.tryPickupPayload();
+                }).tooltip("捡起载荷");
+
+                t.button(Icon.down, ImageHanderNC,imgSize, () -> {
+                    control.input.tryDropPayload();
+                }).tooltip("丢下载荷");
 
             }, () -> showns[4]).left();
 
@@ -379,5 +355,6 @@ public class AuxilliaryTable extends Table {
         }
         return str.toString();
     }
+
 
 }

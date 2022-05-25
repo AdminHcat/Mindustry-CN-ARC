@@ -291,9 +291,15 @@ public class HudFragment{
                 }).width(dsize * 5 + 4f).name("statustable");
             }
 
-
-
             wavesMain.row();
+
+            if(Core.settings.getBool("showAuxiliary") && mobile && Core.graphics.isPortrait()){
+                wavesMain.table(t->{
+                    t.name = "AuxiliaryTable";
+                    t.left().top().add(auxilliaryTable);
+                });
+                wavesMain.row();
+            }
 
             addInfoTable(wavesMain.table().width(dsize * 5f + 4f).left().get());
 
@@ -357,10 +363,10 @@ public class HudFragment{
             editorMain.visible(() -> shown && (state.isEditor() || Core.settings.getBool("selectTeam")));
 
             //map info/nextwave display
-            if(Core.settings.getBool("showAuxiliary")){
+            if(Core.settings.getBool("showAuxiliary") && !(mobile && Core.graphics.isPortrait())){
                 cont.table(infoWave -> {
                     infoWave.name = "map/wave";
-                    infoWave.left().top().visible(() -> shown);
+                    infoWave.left().top();
                     infoWave.add(auxilliaryTable);
                 }).left().top();
             }
@@ -394,6 +400,7 @@ public class HudFragment{
                 info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
 
             }).top().left();
+
         });
 
         //core info
