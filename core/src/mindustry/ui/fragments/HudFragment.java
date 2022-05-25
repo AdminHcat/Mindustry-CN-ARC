@@ -102,6 +102,7 @@ public class HudFragment{
         Events.on(WorldLoadEvent.class,e->{
             otherCoreItemDisplay.updateTeamList();
             auxilliaryTable.toggle();
+            hideObjectives = false;
         });
 
         //paused table
@@ -1031,14 +1032,14 @@ public class HudFragment{
                         var first = state.rules.objectives.first();
                         String text = first.text();
                         if (text != null) {
-                            if (hideObjectives){
+                            if (hideObjectives && state.rules.objectives.first().text().length()>25){
                                 return state.rules.objectives.first().text().substring(0,20) + "...";
                             }
                             return state.rules.objectives.first().text();
                         }
                     }
                     //mission overrides everything
-                    if (state.rules.mission != null) {
+                    if (state.rules.mission != null && state.rules.mission.length()>25) {
                         if (hideObjectives){
                             return state.rules.mission.substring(0,20) + "...";
                         }
