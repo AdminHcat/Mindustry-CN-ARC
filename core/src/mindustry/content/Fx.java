@@ -2331,9 +2331,10 @@ public class Fx{
     }),
 
     arcGatherMarker = new Effect(1800, e -> {
-        color(Color.red);
-        stroke(e.fout() * 2f);
-        Drawf.circles(e.x, e.y,5f*tilesize,Color.red);
+        color(Color.red,0.8f);
+        stroke( 2f);
+        Lines.arc(e.x,e.y, 4f*tilesize - 2f,e.fout());
+        Drawf.circles(e.x, e.y,4f*tilesize,Color.red);
         Drawf.dashLine(Color.red,player.x, player.y, e.x, e.y);
         Drawf.arrow(player.x, player.y, e.x, e.y,5f * tilesize, 4f, Color.red);
     }),

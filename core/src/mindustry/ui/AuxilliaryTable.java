@@ -38,7 +38,7 @@ import static mindustry.ui.Styles.*;
 
 public class AuxilliaryTable extends Table {
     private boolean show = true;
-    private boolean[] showns = {false, false, false, true ,mobile};
+    private boolean[] showns = {false, false, false, false ,mobile};
     public int waveOffset = 0;
     private float fontScl = 0.6f;
     private float buttonSize = 50f;
@@ -128,7 +128,7 @@ public class AuxilliaryTable extends Table {
         clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).fillX().tooltip("关闭辅助器");
+        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).tooltip("关闭辅助器");
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(50f).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(50f).tooltip("波次信息");
         hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(50f).tooltip("玩家AI");
