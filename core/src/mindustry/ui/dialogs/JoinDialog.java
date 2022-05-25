@@ -40,8 +40,6 @@ public class JoinDialog extends BaseDialog{
     int lastPort;
     Task ping;
 
-    boolean versionCheck = false;
-
     public JoinDialog(){
         super("@joingame");
 
@@ -127,11 +125,11 @@ public class JoinDialog extends BaseDialog{
     void setupRemote(){
         remote.clear();
 
-        remote.button((versionCheck? "显示":"隐藏") + "版本不对的服务器",()->{versionCheck = !versionCheck;setupRemote();}).fillX().row();
+        remote.button((Core.settings.getBool("showAccessibleServer")? "显示":"隐藏") + "版本不对的服务器",()->{Core.settings.put("showAccessibleServer",!Core.settings.getBool("showAccessibleServer"));setupRemote();}).fillX().row();
         for(Server server : servers){
             if(server.lastHost != null){
                 int ServerVersion = server.lastHost.version;
-                if(versionCheck &&((ServerVersion != Version.build && Version.build != -1 && ServerVersion != -1) ||(ServerVersion < 136 && ServerVersion!=-1))) continue;
+                if(Core.settings.getBool("showAccessibleServer") &&((ServerVersion != Version.build && Version.build != -1 && ServerVersion != -1) ||(ServerVersion < 136 && ServerVersion!=-1))) continue;
             }
             //why are java lambdas this bad
             Button[] buttons = {null};
