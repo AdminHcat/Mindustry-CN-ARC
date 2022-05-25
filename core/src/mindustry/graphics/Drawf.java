@@ -218,6 +218,32 @@ public class Drawf{
         Draw.reset();
     }
 
+    public static void target2(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
+        Lines.poly(x, y, 4, rad, Time.time * 1.5f);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
+    public static void targetc(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
+        Lines.circle(x, y, rad);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
+    public static void targetd(float x, float y, float rad, float alpha, Color color){
+        // target but no border
+        Lines.stroke(1f);
+        Draw.color(color, alpha);
+        Lines.spikes(x, y, 3f/7f * rad, 6f/7f * rad, 4, Time.time * 1.5f);
+        Draw.reset();
+    }
+
     /** Sets Draw.z to the text layer, and returns the previous layer. */
     public static float text(){
         float z = Draw.z();

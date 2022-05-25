@@ -10,6 +10,7 @@ import arc.math.geom.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.Vars;
 import mindustry.annotations.Annotations.*;
 import mindustry.audio.*;
 import mindustry.content.*;
@@ -265,10 +266,14 @@ public class Weapon implements Cloneable{
         if (draw_minunithealthbar && Core.settings.getBool("unitWeaponTargetLine")){
             if(mount.aimX !=0 && mount.aimY != 0  && Mathf.len(mount.aimX - wx, mount.aimY - wy) <= 1200f){
                 Lines.stroke(1f);
-                Draw.color(unit.team.color);
+                if (unit.controller() == player) {
+                    Draw.color(getPlayerEffectColor());
+                } else {
+                    Draw.color(unit.team.color);
+                }
                 Draw.alpha(mount.shoot?0.8f:0.3f);
                 Lines.line(wx, wy, mount.aimX, mount.aimY);
-                if(!(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player)) Lines.dashCircle(mount.aimX, mount.aimY, 8);
+                if(Core.settings.getInt("unitTargetType")==0 || !(unit.controller() instanceof Player)) Lines.dashCircle(mount.aimX, mount.aimY, 8);
                 Draw.reset();
 
             }

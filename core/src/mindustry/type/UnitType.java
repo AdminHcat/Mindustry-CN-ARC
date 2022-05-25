@@ -1216,9 +1216,20 @@ public class UnitType extends UnlockableContent{
             Lines.dashCircle(unit.x, unit.y, maxRange);
         }
 
-        if(Core.settings.getBool("superUnitTarget") && unit.controller() instanceof Player){
+
+        if(Core.settings.getInt("unitTargetType")>0 && unit.controller() instanceof Player){
             Color effectColor = unit.controller() == Vars.player? getPlayerEffectColor(): unit.team.color;
-            Drawf.target(unit.aimX, unit.aimY, 6f, effectColor);
+            Draw.color(effectColor,0.8f);
+            Lines.stroke(1f);
+            Lines.line(unit.x, unit.y, unit.aimX, unit.aimY);
+
+            switch (Core.settings.getInt("unitTargetType")){
+                case 1: Lines.dashCircle(unit.aimX, unit.aimY, 8);break;
+                case 2: Drawf.target(unit.aimX, unit.aimY, 6f,0.7f, effectColor);break;
+                case 3: Drawf.target2(unit.aimX, unit.aimY, 6f,0.7f, effectColor);break;
+                case 4: Drawf.targetc(unit.aimX, unit.aimY, 6f,0.7f, effectColor);break;
+                case 5: Drawf.targetd(unit.aimX, unit.aimY, 6f,0.7f, effectColor);break;
+            }
         }
 
         if(!control.input.commandMode && Core.settings.getBool("alwaysShowUnitRTSAi") && unit.isCommandable() && (unit.team() == player.team() || !state.rules.pvp ) ){

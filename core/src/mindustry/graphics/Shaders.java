@@ -254,7 +254,6 @@ public class Shaders{
             setUniformf("u_uv2", region.u2, region.v2);
             setUniformf("u_time", time);
             setUniformf("u_texsize", region.texture.width, region.texture.height);
-            setUniformf("wave", Core.settings.getBool("superUnitTarget") ? 1f : 0f);
         }
     }
 
