@@ -54,7 +54,7 @@ public class AuxilliaryTable extends Table {
     private TextButton.TextButtonStyle textStyle, textStyle2, textStyle3;
 
     private ImageButton.ImageButtonStyle ImageHander,ImageHanderNC;
-    private TextButton.TextButtonStyle textHander,textHanderNC;
+    private TextButton.TextButtonStyle textBasic,textHander,textHanderNC;
 
     private MapInfoDialog mapInfoDialog = new MapInfoDialog();
     private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
@@ -63,11 +63,22 @@ public class AuxilliaryTable extends Table {
 
     public AuxilliaryTable() {
 
+        textBasic = new TextButton.TextButtonStyle() {{
+            font = Fonts.def;
+            fontColor = Color.white;
+            down = flatOver;
+            up = black;
+            over = flatOver;
+            disabled = black;
+            disabledFontColor = Color.gray;
+        }};
+
         textHander = new TextButton.TextButtonStyle(fullTogglet){{
             up = none;
             over = accentDrawable;
             down = underlineWhite;
             checked = underlineWhite;
+            disabledFontColor = Color.white;
         }};
 
         ImageHander = new ImageButton.ImageButtonStyle(clearNonei){{
@@ -77,7 +88,7 @@ public class AuxilliaryTable extends Table {
             checked = underlineWhite;
         }};
 
-        textHanderNC = new TextButton.TextButtonStyle(fullTogglet){{
+        textHanderNC = new TextButton.TextButtonStyle(textBasic){{
             up = none;
             over = accentDrawable;
             down = underlineWhite;
@@ -152,7 +163,7 @@ public class AuxilliaryTable extends Table {
         clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textHander, this::toggle).width(60f).height(handerSize).tooltip("关闭辅助器");
+        hander.button("[acid]辅助器", textHander, this::toggle).width(80f).height(handerSize).tooltip("关闭辅助器");
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(handerSize).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(handerSize).tooltip("波次信息");
         hander.button(Blocks.microProcessor.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
