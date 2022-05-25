@@ -130,7 +130,7 @@ public class AuxilliaryTable extends Table {
         clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textHander, this::toggle).width(6f).height(handerSize).tooltip("关闭辅助器");
+        hander.button("[acid]辅助器", textHander, this::toggle).width(60f).height(handerSize).tooltip("关闭辅助器");
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(handerSize).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(handerSize).tooltip("波次信息");
         hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
@@ -220,10 +220,10 @@ public class AuxilliaryTable extends Table {
                                 waveInfo.table(groupT -> {
                                     groupT.image(group.type.uiIcon).size(tableSize).row();
 
-                                    groupT.add("" + amount, tableSize).center();
+                                    groupT.add("" + amount, tableSize/50f).center();
                                     groupT.row();
 
-                                    if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), waveFontScl).center();
+                                    if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), tableSize/50f).center();
                                     groupT.row();
                                     if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(tableSize);
                                 }).padLeft(4).top().tooltip(waveUI.toString());
