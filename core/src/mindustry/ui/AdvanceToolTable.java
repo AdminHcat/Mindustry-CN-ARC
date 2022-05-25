@@ -33,8 +33,7 @@ import java.util.Objects;
 
 import static mindustry.Vars.*;
 import static mindustry.content.UnitTypes.gamma;
-import static mindustry.gen.Tex.flatDownBase;
-import static mindustry.gen.Tex.pane;
+import static mindustry.gen.Tex.*;
 import static mindustry.ui.Styles.*;
 
 
@@ -58,7 +57,7 @@ public class AdvanceToolTable extends Table {
     private boolean showSelectPayload = false;
     private Boolean showPayloadBlock = false;
 
-    private TextButton.TextButtonStyle textStyle;
+    private TextButton.TextButtonStyle textStyle,textMobile;
 
     public AdvanceToolTable() {
         textStyle = new TextButton.TextButtonStyle() {{
@@ -70,6 +69,11 @@ public class AdvanceToolTable extends Table {
             disabledFontColor = Color.gray;
 
         }};
+
+        textMobile = new TextButton.TextButtonStyle(cleart){{
+            checkedFontColor = getThemeColor();
+        }};
+
         rebuild();
     }
 
@@ -89,13 +93,13 @@ public class AdvanceToolTable extends Table {
                 if (mobile) {
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
-                        tBox.button("指挥", cleart, () -> {
+                        tBox.button("指挥", textMobile, () -> {
                             control.input.commandMode = !control.input.commandMode;
-                        }).width(80f);
+                        }).width(50f).checked(control.input.commandMode);
 
                         tBox.button("取消", cleart, () -> {
                             if(control.input instanceof MobileInput input) input.arcClearPlans();
-                        }).width(80f);
+                        }).width(50f);
                     }).left().row();
                 }
                 if (showResTool) {

@@ -42,7 +42,6 @@ public class HudFragment{
     private ImageButton flip;
     private CoreItemsDisplay coreItems = new CoreItemsDisplay();
     private OtherCoreItemDisplay otherCoreItemDisplay = new OtherCoreItemDisplay();
-    private MI2ToolsTable mi2ToolsTable = new MI2ToolsTable();
     private AuxilliaryTable auxilliaryTable = new AuxilliaryTable();
     private AdvanceToolTable advanceToolTable = new AdvanceToolTable();
     private HudSettingsTable hudSettingsTable = new HudSettingsTable();
@@ -102,7 +101,6 @@ public class HudFragment{
 
         Events.on(WorldLoadEvent.class,e->{
             otherCoreItemDisplay.updateTeamList();
-            //mi2ToolsTable.rebuild();
             auxilliaryTable.toggle();
         });
 
@@ -254,7 +252,6 @@ public class HudFragment{
                 imageUpColor = Color.white;
             }};
 
-            //if(Core.settings.getBool("arcSpecificTable") && !state.isCampaign() && state.rules.objectives.size==0 ){
             if(Core.settings.getBool("arcSpecificTable")){
                 wavesMain.table(s -> {
                     //wave info button with text
@@ -359,17 +356,7 @@ public class HudFragment{
             editorMain.visible(() -> shown && (state.isEditor() || Core.settings.getBool("selectTeam")));
 
             //map info/nextwave display
-            /*
-            if(Core.settings.getBool("showMI2toolbox")){
-                cont.table(infoWave -> {
-                    infoWave.name = "map/wave";
-                    infoWave.left().top().visible(() -> shown);
-                    infoWave.add(mi2ToolsTable);
-                }).left().top();
-            }*/
-
-            //map info/nextwave display
-            if(Core.settings.getBool("showMI2toolbox")){
+            if(Core.settings.getBool("showAuxiliary")){
                 cont.table(infoWave -> {
                     infoWave.name = "map/wave";
                     infoWave.left().top().visible(() -> shown);
