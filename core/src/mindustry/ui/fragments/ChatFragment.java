@@ -79,7 +79,7 @@ public class ChatFragment extends Table{
                 }
                 if(input.keyTap(Binding.chat_history_next) && historyPos > 0){
                     if(historyPos == 0) history.set(0, chatfield.getText());
-                    while(!chatValidType(messages.get(historyPos)) && historyPos < history.size - 1) historyPos--;
+                    while(!chatValidType(messages.get(historyPos)) && historyPos < history.size - 1 && historyPos > 0) historyPos--;
                     historyPos--;
                     updateChat();
                 }
@@ -237,7 +237,7 @@ public class ChatFragment extends Table{
     }
 
     public void updateChat() {
-        if (history.get(historyPos).contains(mode.normalizedPrefix())) {
+        if  (history.get(historyPos).contains(mode.normalizedPrefix())) {
             chatfield.setText(history.get(historyPos));
         } else {
             chatfield.setText(mode.normalizedPrefix() + history.get(historyPos));
