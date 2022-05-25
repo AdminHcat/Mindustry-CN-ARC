@@ -1,6 +1,7 @@
 package mindustry.ui;
 
 import arc.Core;
+import arc.Events;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
@@ -9,10 +10,15 @@ import arc.scene.ui.layout.Table;
 import arc.struct.ObjectMap;
 import arc.util.Strings;
 import arc.util.Tmp;
+import mindustry.ai.types.BuilderAI;
+import mindustry.ai.types.MinerAI;
+import mindustry.ai.types.RepairAI;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.entities.units.AIController;
+import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.gen.Icon;
 import mindustry.gen.Payloadc;
@@ -29,17 +35,17 @@ import mindustry.world.blocks.payloads.BuildPayload;
 import mindustry.world.blocks.payloads.Payload;
 import mindustry.world.blocks.payloads.UnitPayload;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import static mindustry.Vars.*;
-import static mindustry.content.UnitTypes.gamma;
-import static mindustry.gen.Tex.*;
+import static mindustry.content.UnitTypes.*;
 import static mindustry.ui.Styles.*;
 
 
 public class AdvanceToolTable extends Table {
     private boolean show = false;
-    private boolean showGameMode = false, showResTool = false, showTeamChange = false, showUnitStat = false;
+    private boolean showGameMode = false, showResTool = false, showTeamChange = false, showUnitStat = false, showAISelect = false;
 
     //unitFactory
     private int unitCount = 1;
@@ -47,7 +53,6 @@ public class AdvanceToolTable extends Table {
     private Vec2 unitLoc = new Vec2(0, 0);
     private ObjectMap<StatusEffect, Float> unitStatus = new ObjectMap<>();
     private final float[] statusTime = {10, 30f, 60f, 120f, 180f, 300f, 600f, 900f, 1200f, 1500f, 1800f, 2700f, 3600f, Float.MAX_VALUE};
-
     private Unit spawnUnit = UnitTypes.emanate.create(Team.sharded);
     private Boolean showUnitSelect = false;
     private Boolean showUnitPro = false;
@@ -56,25 +61,16 @@ public class AdvanceToolTable extends Table {
     private Boolean showPayload = false;
     private boolean showSelectPayload = false;
     private Boolean showPayloadBlock = false;
-
-    private TextButton.TextButtonStyle textStyle,textMobile;
-
+    //AISelect
+    private AIController playerAI;
     public AdvanceToolTable() {
-        textStyle = new TextButton.TextButtonStyle() {{
-            down = flatOver;
-            up = pane;
-            over = flatDownBase;
-            font = Fonts.def;
-            fontColor = Color.white;
-            disabledFontColor = Color.gray;
-
-        }};
-
-        textMobile = new TextButton.TextButtonStyle(cleart){{
-            checkedFontColor = getThemeColor();
-        }};
-
         rebuild();
+        Events.run(EventType.Trigger.update, () -> {
+            if (playerAI != null) {
+                playerAI.unit(player.unit());
+                playerAI.updateUnit();
+            }
+        });
     }
 
     void rebuild() {
@@ -93,15 +89,35 @@ public class AdvanceToolTable extends Table {
                 if (mobile) {
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
-                        tBox.button("指挥", textMobile, () -> {
+                        tBox.button("指挥", cleart, () -> {
                             control.input.commandMode = !control.input.commandMode;
-                        }).width(50f).checked(control.input.commandMode);
+                        }).width(80f);
 
                         tBox.button("取消", cleart, () -> {
-                            if(control.input instanceof MobileInput input) input.arcClearPlans();
-                        }).width(50f);
+                            if (control.input instanceof MobileInput input) input.arcClearPlans();
+                        }).width(80f);
                     }).left().row();
                 }
+
+                if (showAISelect) {
+                    t.table(tBox -> {
+                        tBox.background(Tex.buttonEdge3);
+                        tBox.add("AI：").left();
+
+                        tBox.button(mono.emoji(), flatToggleMenut, () -> {
+                            playerAI = playerAI instanceof MinerAI ? null : new MinerAI();
+                        }).checked(b -> playerAI instanceof MinerAI).size(30f, 30f);
+
+                        tBox.button(poly.emoji(), flatToggleMenut, () -> {
+                            playerAI = playerAI instanceof BuilderAI ? null : new BuilderAI();
+                        }).checked(b -> playerAI instanceof BuilderAI).size(30f, 30f);
+
+                        tBox.button(mega.emoji(), flatToggleMenut, () -> {
+                            playerAI = playerAI instanceof RepairAI ? null : new RepairAI();
+                        }).checked(b -> playerAI instanceof RepairAI).size(30f, 30f);
+                    }).left().row();
+                }
+
                 if (showResTool) {
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
@@ -115,6 +131,7 @@ public class AdvanceToolTable extends Table {
                         }).width(40f).tooltip("[acid]清空核心的所有资源");
                     }).left().row();
                 }
+
                 if (showUnitStat) {
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
@@ -128,38 +145,48 @@ public class AdvanceToolTable extends Table {
                         tBox.button(Icon.waves, clearNonei, this::unitSpawnMenu).width(40f).tooltip("[acid]单位工厂-ARC");
                     }).left().row();
                 }
-                if (showGameMode) {
-                    t.table(tBox -> {
-                        tBox.background(Tex.buttonEdge3);
-                        tBox.add("规则：").left();
-                        tBox.button("解禁", cleart, () -> {
-                            state.rules.bannedBlocks.clear();
-                        }).width(50f).tooltip("[acid]解除所有被禁建筑(不可还原，服务器可以sync)");
-                        tBox.button("无限火力", cleart, () -> {
-                            player.team().rules().cheat = !player.team().rules().cheat;
-                        }).width(90f).tooltip("[acid]开启自己队的无限火力");
-                        tBox.button("编辑器", cleart, () -> {
-                            state.rules.editor = !state.rules.editor;
-                        }).width(70f);
-                        tBox.button("沙盒", cleart, () -> {
-                            state.rules.infiniteResources = !state.rules.infiniteResources;
-                        }).width(50f);
-                        if(Core.settings.getBool("developmode")){
-                            tBox.button("创世神", cleart, () -> {
-                                Core.settings.put("worldCreator",!Core.settings.getBool("worldCreator"));
-                            }).width(70f);
-                        }
-                    }).left().row();
-                }
+
                 if (showTeamChange) {
                     t.table(tBox -> {
                         tBox.background(Tex.buttonEdge3);
                         tBox.add("队伍：").left();
                         for (Team team : Team.baseTeams) {
-                            tBox.button("[#" + team.color + "]" + team.localized(), cleart, () -> player.team(team)).width(40f);
+                            tBox.button(String.format("[#%s]%s", team.color, team.localized()), flatToggleMenut, () -> player.team(team))
+                                    .checked(b -> player.team() == team).size(30f, 30f);
                         }
-                        tBox.button("[#" + Color.violet + "]+", cleart, this::teamChangeMenu).tooltip("[acid]更多队伍选择").width(40f);
+                        tBox.button("[violet]+", flatToggleMenut, this::teamChangeMenu).checked(b -> {
+                            return !Arrays.asList(Team.baseTeams).contains(player.team());
+                        }).tooltip("[acid]更多队伍选择").size(30f, 30f);
 
+                    }).left().row();
+                }
+
+                if (showGameMode) {
+                    t.table(tBox -> {
+                        tBox.background(Tex.buttonEdge3);
+                        tBox.add("规则：").left();
+
+                        tBox.button("解禁", cleart, () -> {
+                            state.rules.bannedBlocks.clear();
+                        }).tooltip("[acid]解除所有被禁建筑(不可还原，服务器可以sync)").width(50f);
+
+                        tBox.button("无限火力", flatToggleMenut, () -> {
+                            player.team().rules().cheat = !player.team().rules().cheat;
+                        }).checked(b -> player.team().rules().cheat).tooltip("[acid]开关自己队的无限火力").size(90f, 30f);
+
+                        tBox.button("编辑器", flatToggleMenut, () -> {
+                            state.rules.editor = !state.rules.editor;
+                        }).checked(b -> state.rules.editor).size(70f, 30f);
+
+                        tBox.button("沙盒", flatToggleMenut, () -> {
+                            state.rules.infiniteResources = !state.rules.infiniteResources;
+                        }).checked(b -> state.rules.infiniteResources).size(50f, 30f);
+
+                        if (Core.settings.getBool("developmode")) {
+                            tBox.button("创世神", flatToggleMenut, () -> {
+                                Core.settings.put("worldCreator", !Core.settings.getBool("worldCreator"));
+                            }).checked(b -> Core.settings.getBool("worldCreator")).size(70f, 30f);
+                        }
                     }).left().row();
                 }
 
@@ -184,6 +211,10 @@ public class AdvanceToolTable extends Table {
                     }).width(50f);
                     mainBox.button((showTeamChange ? "[cyan]" : "[acid]") + "队伍", cleart, () -> {
                         showTeamChange = !showTeamChange;
+                        rebuild();
+                    }).width(50f);
+                    mainBox.button((showAISelect ? "[cyan]" : "[acid]") + "AI", cleart, () -> {
+                        showAISelect = !showAISelect;
                         rebuild();
                     }).width(50f);
 
