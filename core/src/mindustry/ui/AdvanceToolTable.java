@@ -45,7 +45,7 @@ import static mindustry.ui.Styles.*;
 
 public class AdvanceToolTable extends Table {
     private boolean show = false;
-    private boolean showGameMode = false, showResTool = false, showTeamChange = false, showUnitStat = false, showAISelect = false;
+    private boolean showGameMode = false, showResTool = false, showTeamChange = false, showUnitStat = false;
 
     //unitFactory
     private int unitCount = 1;
@@ -61,16 +61,9 @@ public class AdvanceToolTable extends Table {
     private Boolean showPayload = false;
     private boolean showSelectPayload = false;
     private Boolean showPayloadBlock = false;
-    //AISelect
-    private AIController playerAI;
+
     public AdvanceToolTable() {
         rebuild();
-        Events.run(EventType.Trigger.update, () -> {
-            if (playerAI != null) {
-                playerAI.unit(player.unit());
-                playerAI.updateUnit();
-            }
-        });
     }
 
     void rebuild() {
@@ -96,25 +89,6 @@ public class AdvanceToolTable extends Table {
                         tBox.button("取消", cleart, () -> {
                             if (control.input instanceof MobileInput input) input.arcClearPlans();
                         }).width(80f);
-                    }).left().row();
-                }
-
-                if (showAISelect) {
-                    t.table(tBox -> {
-                        tBox.background(Tex.buttonEdge3);
-                        tBox.add("AI：").left();
-
-                        tBox.button(mono.emoji(), flatToggleMenut, () -> {
-                            playerAI = playerAI instanceof MinerAI ? null : new MinerAI();
-                        }).checked(b -> playerAI instanceof MinerAI).size(30f, 30f);
-
-                        tBox.button(poly.emoji(), flatToggleMenut, () -> {
-                            playerAI = playerAI instanceof BuilderAI ? null : new BuilderAI();
-                        }).checked(b -> playerAI instanceof BuilderAI).size(30f, 30f);
-
-                        tBox.button(mega.emoji(), flatToggleMenut, () -> {
-                            playerAI = playerAI instanceof RepairAI ? null : new RepairAI();
-                        }).checked(b -> playerAI instanceof RepairAI).size(30f, 30f);
                     }).left().row();
                 }
 
@@ -211,10 +185,6 @@ public class AdvanceToolTable extends Table {
                     }).width(50f);
                     mainBox.button((showTeamChange ? "[cyan]" : "[acid]") + "队伍", cleart, () -> {
                         showTeamChange = !showTeamChange;
-                        rebuild();
-                    }).width(50f);
-                    mainBox.button((showAISelect ? "[cyan]" : "[acid]") + "AI", cleart, () -> {
-                        showAISelect = !showAISelect;
                         rebuild();
                     }).width(50f);
 

@@ -1,6 +1,7 @@
 package mindustry.ui;
 
 import arc.Core;
+import arc.Events;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
@@ -11,13 +12,16 @@ import arc.struct.ObjectMap;
 import arc.util.Strings;
 import arc.util.Tmp;
 import mindustry.Vars;
+import mindustry.ai.types.BuilderAI;
+import mindustry.ai.types.DefenderAI;
+import mindustry.ai.types.MinerAI;
+import mindustry.ai.types.RepairAI;
 import mindustry.content.Blocks;
-import mindustry.content.Items;
 import mindustry.content.StatusEffects;
-import mindustry.content.UnitTypes;
 import mindustry.core.UI;
 import mindustry.editor.MapInfoDialog;
 import mindustry.editor.WaveInfoDialog;
+import mindustry.entities.units.AIController;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.input.DesktopInput;
@@ -29,8 +33,7 @@ import mindustry.type.StatusEffect;
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
-import static mindustry.content.UnitTypes.gamma;
-import static mindustry.content.UnitTypes.poly;
+import static mindustry.content.UnitTypes.*;
 import static mindustry.gen.Tex.*;
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
@@ -41,21 +44,22 @@ public class AuxilliaryTable extends Table {
     private boolean[] showns = {false, false, false, false ,mobile};
     public int waveOffset = 0;
     private float fontScl = 0.6f;
-    private float buttonSize = 50f;
+    private float buttonSize = 30f;
     private float imgSize = 33f;
 
     private float handerSize = 40f;
-    private float tableSize = 30f;
+    private float tableSize = 20f;
 
     private ImageButton.ImageButtonStyle imgStyle, imgToggleStyle;
     private TextButton.TextButtonStyle textStyle, textStyle2, textStyle3;
 
-    private ImageButton.ImageButtonStyle ImageHander;
-    private TextButton.TextButtonStyle textHander;
+    private ImageButton.ImageButtonStyle ImageHander,ImageHanderNC;
+    private TextButton.TextButtonStyle textHander,textHanderNC;
 
     private MapInfoDialog mapInfoDialog = new MapInfoDialog();
     private WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
 
+    private AIController playerAI;
 
     public AuxilliaryTable() {
 
@@ -71,6 +75,18 @@ public class AuxilliaryTable extends Table {
             over = accentDrawable;
             down = none;
             checked = underlineWhite;
+        }};
+
+        textHanderNC = new TextButton.TextButtonStyle(fullTogglet){{
+            up = none;
+            over = accentDrawable;
+            down = underlineWhite;
+        }};
+
+        ImageHanderNC = new ImageButton.ImageButtonStyle(clearNonei){{
+            up = none;
+            over = accentDrawable;
+            down = none;
         }};
 
         imgStyle = clearNonei;
@@ -111,6 +127,12 @@ public class AuxilliaryTable extends Table {
             checked = underlineWhite;
         }};
 
+        Events.run(EventType.Trigger.update, () -> {
+            if (playerAI != null) {
+                playerAI.unit(player.unit());
+                playerAI.updateUnit();
+            }
+        });
 
         toggle();
     }
@@ -133,7 +155,7 @@ public class AuxilliaryTable extends Table {
         hander.button("[acid]辅助器", textHander, this::toggle).width(60f).height(handerSize).tooltip("关闭辅助器");
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(handerSize).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(handerSize).tooltip("波次信息");
-        hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
+        hander.button(Blocks.microProcessor.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
         hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
         hander.button(gamma.emoji(), textHander, () -> showns[4] = !showns[4]).size(handerSize).tooltip("<手机>控制器").visible(mobile);
 
@@ -146,48 +168,45 @@ public class AuxilliaryTable extends Table {
 
             /* 地图信息界面 */
             body.collapser(t -> {
-                t.button(Icon.map, imgStyle, () -> mapInfoDialog.show()).size(50f).tooltip("地图信息");
+                t.button(Icon.map, ImageHanderNC, () -> mapInfoDialog.show()).size(handerSize).tooltip("地图信息");
             }, () -> showns[0]).left();
 
             body.row();
 
             /* 波次信息界面 */
             body.collapser(t -> {
-                t.button(Icon.waves, imgStyle, () -> waveInfoDialog.show()).size(50f).tooltip("波次信息");
+                t.button(Icon.waves, ImageHanderNC, () -> waveInfoDialog.show()).size(handerSize).tooltip("波次信息");
 
                 t.table(buttons -> {
-                    buttons.label(() -> "Wave " + (state.wave + waveOffset)).padLeft(3).get().setFontScale(fontScl);
-
-                    buttons.button("<", textStyle, () -> {
+                    buttons.button("<", textHanderNC, () -> {
                         waveOffset -= 1;
                         if(state.wave + waveOffset - 1 < 0) waveOffset = -state.wave + 1;
-                    }).size(buttonSize);
+                    }).size(handerSize);
 
-                    buttons.button("O", textStyle, () -> {
+                    buttons.button("O", textHanderNC, () -> {
                         waveOffset = 0;
-                    }).size(buttonSize);
+                    }).size(handerSize);
 
-                    buttons.button(">", textStyle, () -> {
+                    buttons.button(">", textHanderNC, () -> {
                         waveOffset += 1;
-                    }).size(buttonSize);
+                    }).size(handerSize);
 
-                    buttons.button("Go", textStyle, () -> {
+                    buttons.button("Go", textHanderNC, () -> {
                         state.wave += waveOffset;
                         waveOffset = 0;
-                    }).size(buttonSize);
+                    }).size(handerSize);
 
-                    buttons.button(Icon.link, imgStyle, imgSize, () -> {
+                    buttons.button(Icon.link, ImageHander, handerSize, () -> {
                         String message = arcShareWaveInfo(state.wave + waveOffset);
                         int seperator = 145;
                         for(int i = 0; i < message.length() / (float)seperator; i++){
                             Call.sendChatMessage(message.substring(i * seperator, Math.min(message.length(), (i + 1) * seperator)));
                         }
-                    }).size(buttonSize).disabled(!state.rules.waves && !settings.getBool("arcShareWaveInfo"));
+                    }).disabled(!state.rules.waves && !settings.getBool("arcShareWaveInfo"));
 
                 }).left().row();
 
-                float waveImagSize = iconSmall;
-                float waveFontScl = 0.9f;
+                t.label(() -> "" + (state.wave + waveOffset)).get().setFontScale(tableSize/30f);
 
                 t.table(waveInfo -> {
                     waveInfo.update(() -> {
@@ -220,10 +239,10 @@ public class AuxilliaryTable extends Table {
                                 waveInfo.table(groupT -> {
                                     groupT.image(group.type.uiIcon).size(tableSize).row();
 
-                                    groupT.add("" + amount, tableSize/50f).center();
+                                    groupT.add("" + amount, tableSize/30f).center();
                                     groupT.row();
 
-                                    if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), tableSize/50f).center();
+                                    if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), tableSize/30f).center();
                                     groupT.row();
                                     if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(tableSize);
                                 }).padLeft(4).top().tooltip(waveUI.toString());
@@ -238,28 +257,44 @@ public class AuxilliaryTable extends Table {
 
             /* 玩家AI */
             body.collapser(t -> {
+                t.button(Blocks.microProcessor.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("玩家AI");
+
+                t.button(mono.emoji(), textHander, () -> {
+                    playerAI = playerAI instanceof MinerAI ? null : new MinerAI();
+                }).checked(b -> playerAI instanceof MinerAI).size(handerSize).tooltip("矿机AI");
+
+                t.button(poly.emoji(), textHander, () -> {
+                    playerAI = playerAI instanceof BuilderAI ? null : new BuilderAI();
+                }).checked(b -> playerAI instanceof BuilderAI).size(handerSize).tooltip("重建AI");
+
+                t.button(mega.emoji(), textHander, () -> {
+                    playerAI = playerAI instanceof RepairAI ? null : new RepairAI();
+                }).checked(b -> playerAI instanceof RepairAI).size(handerSize).tooltip("修复AI");
+
+                t.button(oct.emoji(), textHander, () -> {
+                    playerAI = playerAI instanceof DefenderAI ? null : new DefenderAI();
+                }).checked(b -> playerAI instanceof DefenderAI).size(handerSize).tooltip("保护AI");
+
             }, () -> showns[2]).left();
 
             body.row();
 
             /* 控制器 */
             body.collapser(t -> {
-                t.button(Icon.refreshSmall, imgStyle, () -> {
-                    Call.sendChatMessage("/sync");
-                }).height(buttonSize).growX();
+                t.button(gamma.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
 
-                t.button(new TextureRegionDrawable(poly.uiIcon), imgStyle, imgSize, () -> {
+                t.button(new TextureRegionDrawable(Blocks.buildTower.uiIcon), ImageHanderNC, imgSize, () -> {
                     player.buildDestroyedBlocks();
-                }).height(buttonSize).growX();
+                }).tooltip("在建造列表加入被摧毁建筑");
 
-                t.button(new TextureRegionDrawable(gamma.uiIcon), imgStyle, imgSize, () -> {
+                t.button(new TextureRegionDrawable(gamma.uiIcon), ImageHanderNC, imgSize, () -> {
                     if (ui.chatfrag.marker.size>0) ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
-                }).height(buttonSize).growX();
+                }).tooltip("锁定上个标记点");
 
-                t.button(Icon.modeAttack, imgToggleStyle, imgSize, () -> {
+                t.button(Icon.modeAttack, ImageHanderNC, imgSize, () -> {
                     boolean at = settings.getBool("autotarget");
                     settings.put("autotarget", !at);
-                }).height(buttonSize).growX().checked(settings.getBool("autotarget"));
+                }).tooltip("自动攻击").checked(settings.getBool("autotarget"));
 
             }, () -> showns[3]).left();
 
