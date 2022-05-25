@@ -44,6 +44,8 @@ public class AuxilliaryTable extends Table {
     private float buttonSize = 50f;
     private float imgSize = 33f;
 
+    private float handerSize = 40f;
+    private float tableSize = 30f;
 
     private ImageButton.ImageButtonStyle imgStyle, imgToggleStyle;
     private TextButton.TextButtonStyle textStyle, textStyle2, textStyle3;
@@ -121,19 +123,19 @@ public class AuxilliaryTable extends Table {
 
     void buildHide(){
         clear();
-        button("[cyan]辅助器", textHander, this::toggle).width(80f).height(35).tooltip("开启辅助器");
+        button("[cyan]辅助器", textHander, this::toggle).width(80f).height(handerSize).tooltip("开启辅助器");
     }
 
     void buildShow() {
         clear();
         Table hander = table().fillX().get();
 
-        hander.button("[acid]辅助器", textHander, this::toggle).width(70f).height(50f).tooltip("关闭辅助器");
-        hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(50f).tooltip("地图信息");
-        hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(50f).tooltip("波次信息");
-        hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(50f).tooltip("玩家AI");
-        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).size(50f).tooltip("控制器");
-        hander.button(gamma.emoji(), textHander, () -> showns[4] = !showns[4]).size(50f).tooltip("<手机>控制器").visible(mobile);
+        hander.button("[acid]辅助器", textHander, this::toggle).width(6f).height(handerSize).tooltip("关闭辅助器");
+        hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).size(handerSize).tooltip("地图信息");
+        hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).size(handerSize).tooltip("波次信息");
+        hander.button(gamma.emoji(), textHander, () -> showns[2] = !showns[2]).size(handerSize).tooltip("玩家AI");
+        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
+        hander.button(gamma.emoji(), textHander, () -> showns[4] = !showns[4]).size(handerSize).tooltip("<手机>控制器").visible(mobile);
 
         row();
 
@@ -156,11 +158,6 @@ public class AuxilliaryTable extends Table {
                 t.table(buttons -> {
                     buttons.label(() -> "Wave " + (state.wave + waveOffset)).padLeft(3).get().setFontScale(fontScl);
 
-                    buttons.button("<<", textStyle, () -> {
-                        waveOffset -= 10;
-                        if(state.wave + waveOffset - 1 < 0) waveOffset = -state.wave + 1;
-                    }).size(buttonSize);
-
                     buttons.button("<", textStyle, () -> {
                         waveOffset -= 1;
                         if(state.wave + waveOffset - 1 < 0) waveOffset = -state.wave + 1;
@@ -174,24 +171,9 @@ public class AuxilliaryTable extends Table {
                         waveOffset += 1;
                     }).size(buttonSize);
 
-                    buttons.button(">>", textStyle, () -> {
-                        waveOffset += 10;
-                    }).size(buttonSize);
-
                     buttons.button("Go", textStyle, () -> {
                         state.wave += waveOffset;
                         waveOffset = 0;
-                    }).size(buttonSize);
-
-                    buttons.button("RW", textStyle, () -> {
-                        for(int rw = waveOffset; rw > 0; rw--){
-                            if(net.client() && player.admin){
-                                Call.adminRequest(player, Packets.AdminAction.wave);
-                            }else{
-                                logic.skipWave();
-                            }
-                            waveOffset = 0;
-                        }
                     }).size(buttonSize);
 
                     buttons.button(Icon.link, imgStyle, imgSize, () -> {
@@ -236,14 +218,14 @@ public class AuxilliaryTable extends Table {
                                 }
 
                                 waveInfo.table(groupT -> {
-                                    groupT.image(group.type.uiIcon).size(waveImagSize).row();
+                                    groupT.image(group.type.uiIcon).size(tableSize).row();
 
-                                    groupT.add("" + amount, waveFontScl).center();
+                                    groupT.add("" + amount, tableSize).center();
                                     groupT.row();
 
                                     if(shield > 0f) groupT.add("" + UI.formatAmount((long)shield), waveFontScl).center();
                                     groupT.row();
-                                    if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(waveImagSize);
+                                    if(effect != null && effect != StatusEffects.none) groupT.image(effect.uiIcon).size(tableSize);
                                 }).padLeft(4).top().tooltip(waveUI.toString());
 
                             }

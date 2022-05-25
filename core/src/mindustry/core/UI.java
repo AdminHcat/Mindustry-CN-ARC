@@ -326,7 +326,7 @@ public class UI implements ApplicationListener, Loadable{
 
     /** Shows a fading label at the top of the screen. */
     public void showInfoToast(String info, float duration){
-        if (!info.contains("警告：单位过多"))  ui.chatfrag.addMessage("[acid][公屏][white]"+info);
+        if (!info.contains("建筑过多单位") && !info.contains("可能造成服务器卡顿"))  ui.chatfrag.addMessage("[acid][公屏][white]"+info);
         var cinfo = Core.scene.find("coreinfo");
         Table table = new Table();
         table.touchable = Touchable.disabled;

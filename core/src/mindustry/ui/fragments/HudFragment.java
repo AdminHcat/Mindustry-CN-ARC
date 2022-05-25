@@ -1039,8 +1039,8 @@ public class HudFragment{
                         }
                     }
                     //mission overrides everything
-                    if (state.rules.mission != null && state.rules.mission.length()>25) {
-                        if (hideObjectives){
+                    if (state.rules.mission != null) {
+                        if (hideObjectives && state.rules.mission.length()>25){
                             return state.rules.mission.substring(0,20) + "...";
                         }
                         return state.rules.mission;
