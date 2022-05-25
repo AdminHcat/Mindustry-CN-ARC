@@ -2325,18 +2325,32 @@ public class Fx{
         color(Pal.command);
         stroke(e.fout() * 2f);
         Lines.circle(e.x, e.y, 4f + e.finpow() * 120f);
-        Drawf.circles(e.x, e.y,1f*tilesize);
+        Lines.circle(e.x, e.y,1f*tilesize);
         Drawf.dashLine(Color.orange,player.x, player.y, e.x, e.y);
         Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Pal.command);
     }),
 
     arcGatherMarker = new Effect(1800, e -> {
-        color(Color.red,0.8f);
+        color(Color.cyan,0.8f);
         stroke( 2f);
         Lines.arc(e.x,e.y, 4f*tilesize - 2f,e.fout());
-        Drawf.circles(e.x, e.y,4f*tilesize,Color.red);
+        Lines.circle(e.x, e.y,4f*tilesize);
         Drawf.dashLine(Color.red,player.x, player.y, e.x, e.y);
         Drawf.arrow(player.x, player.y, e.x, e.y,5f * tilesize, 4f, Color.red);
+    }),
+
+    arcAttackMarker = new Effect(1800, e -> {
+        color(Color.red);
+        stroke(2f);
+        Lines.circle(e.x, e.y,1f*tilesize);
+        float radius = 20f + e.finpow() * 80f;
+        Lines.circle(e.x, e.y, radius);
+        //Drawf.dashLine(Color.red,player.x, player.y, e.x, e.y);
+        for(int i = 0; i < 4; i++){
+            float rot = i * 90f + 45f + (-Time.time) % 360f;
+            Drawf.simpleArrow(e.x  + Angles.trnsx(rot, radius),e.y +  + Angles.trnsy(rot, radius), e.x, e.y,6f + 4 * e.finpow(),2f + 4 * e.finpow(),Color.red);
+        }
+        Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Color.red);
     }),
 
     chainEmp = new Effect(30f, 300f, e -> {

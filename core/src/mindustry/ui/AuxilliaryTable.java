@@ -29,7 +29,6 @@ import static mindustry.content.UnitTypes.*;
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
 
-
 public class AuxilliaryTable extends Table {
     private boolean show = true;
     private boolean[] showns = {false, false, false, false ,mobile};
@@ -268,6 +267,10 @@ public class AuxilliaryTable extends Table {
                 t.button(vela.emoji(), textHander, () -> {
                     playerBoost = !playerBoost;
                 }).tooltip("助推").size(handerSize).checked(playerBoost);
+
+                t.button("♐", textHander, () -> {
+                    settings.put("markType",(settings.getInt("markType")+1)%4);
+                }).checked(b -> playerAI instanceof DefenderAI).size(handerSize).tooltip("保护AI");
 
             }, () -> showns[3]).left();
 

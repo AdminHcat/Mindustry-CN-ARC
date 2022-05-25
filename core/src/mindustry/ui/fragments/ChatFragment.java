@@ -16,12 +16,11 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.arcModule.arcMarker;
-import mindustry.game.SpawnGroup;
 import mindustry.gen.*;
 import mindustry.input.*;
 import mindustry.ui.*;
-import mindustry.content.*;
-import mindustry.entities.*;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -45,6 +44,8 @@ public class ChatFragment extends Table{
     public float arcMarkX = 0,arcMarkY = 0;
     /** Mark. */
     public Seq<arcMarker> marker = new Seq<>();
+    arcMarker.markType msgType = null;
+    String msgMarkType = "";
 
     public ChatFragment(){
         super();
@@ -289,36 +290,36 @@ public class ChatFragment extends Table{
     }
 
     private void feedbackMessage(String message) {
-        if (message.contains("标记了一处地点")) {
-            float x = 0;
-            float y = 0;
+        if (message.contains("[ARC")) {
+            int x = 0;
+            int y = 0;
             try {
                 int strLength = message.length();
                 int stopindex = 0;
                 for (int i = 0; i < strLength; i++) {
+                    if (message.substring(i, i + 1).equals("]")) {
+                        msgMarkType = message.substring(i+1,i+3).trim();
+                    }
                     if (message.substring(i, i + 1).equals("(")) {
                         stopindex = i;
                     }
                     if (message.substring(i, i + 1).equals(",") && stopindex > 0) {
-                        x = Float.parseFloat(message.substring(stopindex + 1, i).trim());
-                        y = Float.parseFloat(message.substring(i + 1, strLength - 1).trim());
+                        x = Integer.parseInt(message.substring(stopindex + 1, i).trim());
+                        y = Integer.parseInt(message.substring(i + 1, strLength - 1).trim());
                         break;
                     }
                 }
+                arcMarker.markString.each((type, name) ->{
+                    if(name == msgMarkType) msgType = type;
+                });
             } catch (Exception e) {}
 
-            arcMarker newMarker = new arcMarker(){{
-                type = arcMarker.markType.MARK;
-                time = Time.time;
-            }};
-            newMarker.loc = new Vec2(x * tilesize, y * tilesize);
-            newMarker.showEffect();
-            marker.add(newMarker);
+            arcMarker.newMarker(x,y,msgType).showEffect();
 
         } else if (message.contains("发起集合")) {
             int strLength = message.length();
-            float x = 0;
-            float y = 0;
+            int x = 0;
+            int y = 0;
             int initindex = 0;
             int interval = 0;
             try {
@@ -331,21 +332,15 @@ public class ChatFragment extends Table{
                             interval = i;
                         }
                         if (message.substring(i, i + 1).equals(")")) {
-                            x = Float.parseFloat(message.substring(initindex + 6, interval).trim());
-                            y = Float.parseFloat(message.substring(interval + 1, i - 7).trim());
+                            x = Integer.parseInt(message.substring(initindex + 6, interval).trim());
+                            y = Integer.parseInt(message.substring(interval + 1, i - 7).trim());
                             break;
                         }
                     }
                 }
             }catch (Exception e) {}
 
-            arcMarker newMarker = new arcMarker(){{
-                type = arcMarker.markType.GATHER;
-                time = Time.time;
-            }};
-            newMarker.loc = new Vec2(x * tilesize, y * tilesize);
-            newMarker.showEffect();
-            marker.add(newMarker);
+            arcMarker.newMarker(x,y, arcMarker.markType.GATHER).showEffect();
         }
     }
 

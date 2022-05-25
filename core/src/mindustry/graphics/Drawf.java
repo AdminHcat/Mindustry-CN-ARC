@@ -410,6 +410,17 @@ public class Drawf{
         Draw.color();
     }
 
+    public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius, Color color){
+        float angle = Angles.angle(x, y, x2, y2);
+        float space = 2f;
+        Tmp.v1.set(x2, y2).sub(x, y).limit(length);
+        float vx = Tmp.v1.x + x, vy = Tmp.v1.y + y;
+
+        Draw.color(color);
+        Fill.poly(vx, vy, 3, radius, angle);
+        Draw.color();
+    }
+
     public static void laser(TextureRegion line, TextureRegion edge, float x, float y, float x2, float y2){
         laser(line, edge, edge, x, y, x2, y2, 1f);
     }

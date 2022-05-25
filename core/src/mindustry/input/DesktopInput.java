@@ -26,6 +26,7 @@ import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.Block.*;
 import mindustry.world.blocks.*;
+import mindustry.arcModule.arcMarker;
 
 import static arc.Core.*;
 import static mindustry.Vars.net;
@@ -527,7 +528,7 @@ public class DesktopInput extends InputHandler{
         }
 
         if(Core.input.keyTap(Binding.point)){
-			Call.sendChatMessage("[ARC"+arcVersion+"]"+"标记了一处地点[red]("+cursorX+","+cursorY+")");
+            arcMarker.newMarker(cursorX,cursorY).shareInfo();
         }
 
         if(Core.input.keyTap(Binding.rtsSelectHealth)){
