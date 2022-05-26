@@ -166,7 +166,8 @@ public class Drill extends Block{
 
         stats.add(Stat.Tier, tier);
 
-        stats.add(Stat.drillTier, StatValues.blocks(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null && f.itemDrop.hardness <= tier && f.itemDrop != blockedItem));
+        //stats.add(Stat.drillTier, StatValues.blocks(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null && f.itemDrop.hardness <= tier && f.itemDrop != blockedItem));
+        stats.add(Stat.drillTier, StatValues.drillBlock(this));
 
         stats.add(Stat.drillTime, drillTime);
         stats.add(Stat.drillSpeed, 60f / drillTime * size * size, StatUnit.itemsSecond);
