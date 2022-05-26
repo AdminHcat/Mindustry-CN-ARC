@@ -320,8 +320,9 @@ public class AuxilliaryTable extends Table {
 
             body.collapser(t -> {
                 if(mobile){
-                    t.button("♐ >", textHanderNC, () -> {arcMarker.initMobileMark();
-                        ui.announce("[cyan]你已进入标记点模式，长按屏幕可进行标记。");
+                    t.button("♐ >", textHanderNC, () -> {arcMarker.mobileMark = !arcMarker.mobileMark;
+                        if(arcMarker.mobileMark) ui.announce("[cyan]你已进入标记点模式，长按屏幕可进行标记。");
+                        else ui.announce("[cyan]你已退出标记点模式");
                     }).height(handerSize).width(70f).tooltip("开启手机标记");
                 }else{
                     t.button("♐ >", textHanderNC, () -> showns[5] = !showns[5]).height(handerSize).width(70f).tooltip("标记");
