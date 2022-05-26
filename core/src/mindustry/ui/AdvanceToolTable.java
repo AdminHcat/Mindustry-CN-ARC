@@ -267,10 +267,11 @@ public class AdvanceToolTable extends Table {
                     rebuild[0].run();
                 }).tooltip("选择玩家当前位置：" + Strings.autoFixed(player.x / tilesize, 2) + "," + Strings.autoFixed(player.y / tilesize, 2)).height(50f);
                 t.button(StatusEffects.blasted.emoji(), () -> {
+                    if(arcMarker.markList.size==0) return;
                     unitLoc.x = arcMarker.markList.peek().loc.x;
                     unitLoc.y = arcMarker.markList.peek().loc.y;
                     rebuild[0].run();
-                }).tooltip("选择上个标记点：" + arcMarker.markList.peek().loc.x + "," + arcMarker.markList.peek().loc.y).height(50f);
+                }).tooltip(arcMarker.markList.size==0?"[red]未标记":"选择上个标记点：" + arcMarker.markList.peek().loc.x + "," + arcMarker.markList.peek().loc.y).height(50f);
             });
 
             table.row();
