@@ -328,10 +328,14 @@ public class AuxilliaryTable extends Table {
                 }
 
 
-                t.button("[#eab678]标", textHander, () -> settings.put("markType",0)).size(handerSize).tooltip("标记位置");
-                t.button("[#00ffff]集", textHander, () -> settings.put("markType",1)).size(handerSize).tooltip("标记集合点");
-                t.button("[#ff0000]攻", textHander, () -> settings.put("markType",2)).size(handerSize).tooltip("标记攻击点");
-                t.button("[#7fff00]守", textHander, () -> settings.put("markType",3)).size(handerSize).tooltip("标记防守点");
+                t.button("[#eab678]标", textHander, () -> settings.put("markType",0))
+                        .checked(b -> settings.getInt("markType") == 0).size(handerSize).tooltip("标记位置");
+                t.button("[#00ffff]集", textHander, () -> settings.put("markType",1))
+                        .checked(b -> settings.getInt("markType") == 1).size(handerSize).tooltip("标记集合点");
+                t.button("[#ff0000]攻", textHander, () -> settings.put("markType",2))
+                        .checked(b -> settings.getInt("markType") == 2).size(handerSize).tooltip("标记攻击点");
+                t.button("[#7fff00]守", textHander, () -> settings.put("markType",3))
+                        .checked(b -> settings.getInt("markType") == 3).size(handerSize).tooltip("标记防守点");
 
             }, () -> showns[5]).left();
 
