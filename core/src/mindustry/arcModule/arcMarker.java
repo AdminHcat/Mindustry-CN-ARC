@@ -128,8 +128,9 @@ public class arcMarker{
 
     public void shareInfo(){
         String location = "(" + (int)loc.x + "," + (int)loc.y + ")";
-        if(markList.size<2 || (Time.time - markList.get(markList.size - 2).time)>100f)
+        if(!net.active() || markList.size<2 || (Time.time - markList.get(markList.size - 2).time)>100f)
             Call.sendChatMessage(msgHander + markString.get(type) +"：[red]"+location);
+        else ui.announce("[red]请不要在服务器连续使用标记");
     }
 
     public void showEffect(){

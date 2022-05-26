@@ -6,6 +6,7 @@ import arc.graphics.Color;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.Table;
+import arc.util.Strings;
 import mindustry.Vars;
 import mindustry.ai.types.BuilderAI;
 import mindustry.ai.types.DefenderAI;
@@ -23,6 +24,7 @@ import mindustry.gen.*;
 import mindustry.type.StatusEffect;
 
 import mindustry.arcModule.arcMarker;
+import mindustry.ui.dialogs.BaseDialog;
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
@@ -125,7 +127,7 @@ public class AuxilliaryTable extends Table {
         hander.button(Icon.map, ImageHander, () -> showns[0] = !showns[0]).checked(showns[0]).size(handerSize).tooltip("地图信息");
         hander.button(Icon.waves, ImageHander, () -> showns[1] = !showns[1]).checked(showns[1]).size(handerSize).tooltip("波次信息");
         hander.button(Blocks.microProcessor.emoji(), textHander, () -> showns[2] = !showns[2]).checked(showns[2]).size(handerSize).tooltip("玩家AI");
-        hander.button(gamma.emoji(), textHander, () -> showns[3] = !showns[3]).checked(showns[3]).size(handerSize).tooltip("控制器");
+        hander.button(gamma.emoji(), textHander, () -> {showns[3] = !showns[3];showns[5] = false;}).checked(showns[3]).size(handerSize).tooltip("控制器");
         hander.button(emanate.emoji(), textHander, () -> showns[4] = !showns[4]).checked(showns[4]).size(handerSize).tooltip("<手机>控制器").visible(true);
 
         row();
@@ -144,7 +146,8 @@ public class AuxilliaryTable extends Table {
 
             /* 波次信息界面 */
             body.collapser(t -> {
-                t.button(Icon.waves, ImageHanderNC, () -> waveInfoDialog.show()).size(handerSize).tooltip("波次信息");
+                t.button(Icon.waves, ImageHanderNC, () -> {waveInfoDialog.show();
+                }).size(handerSize).tooltip("波次信息");
 
                 t.table(buttons -> {
                     buttons.button("<", textHanderNC, () -> {
@@ -174,8 +177,19 @@ public class AuxilliaryTable extends Table {
                     }).size(handerSize).disabled(!state.rules.waves && !settings.getBool("arcShareWaveInfo"));
 
                 }).left().row();
-
-                t.label(() -> "" + (state.wave + waveOffset)).get().setFontScale(tableSize/30f);
+                t.table(setWave -> {
+                    setWave.label(() -> "" + (state.wave + waveOffset)).get().setFontScale(tableSize/30f);
+                    setWave.row();
+                    setWave.button(Icon.settings,ImageHanderNC,imgSize * 0.7f,()->{
+                        Dialog lsSet = new BaseDialog("波次设定");
+                        lsSet.cont.add("设定查询波次").padRight(5f).left();
+                        TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> {
+                            waveOffset = Integer.parseInt(text) - state.wave;
+                        }).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
+                        lsSet.addCloseButton();
+                        lsSet.show();
+                    });
+                });
 
                 t.table(waveInfo -> {
                     waveInfo.update(() -> {
@@ -250,7 +264,7 @@ public class AuxilliaryTable extends Table {
 
             /* 控制器 */
             body.collapser(t -> {
-                t.button(gamma.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("控制器");
+                t.button(gamma.emoji() + " >", textHanderNC, () -> {showns[3] = !showns[3];showns[5] = false;}).size(handerSize).tooltip("控制器");
 
                 t.button(Blocks.buildTower.emoji(), textHanderNC, () -> {
                     player.buildDestroyedBlocks();
@@ -282,7 +296,7 @@ public class AuxilliaryTable extends Table {
             body.collapser(t -> {
                 t.button(emanate.emoji() + " >", textHanderNC, () -> showns[3] = !showns[3]).size(handerSize).tooltip("手机控制器");
 
-                t.button(Icon.units, ImageHanderNC,imgSize, () -> {
+                t.button(Icon.units, ImageHanderNC,imgSize * 0.8f, () -> {
                     control.input.commandMode = !control.input.commandMode;
                 }).tooltip("指挥模式").checked(control.input.commandMode);
 
@@ -305,12 +319,19 @@ public class AuxilliaryTable extends Table {
             body.row();
 
             body.collapser(t -> {
-                t.button("♐ >", textHanderNC, () -> arcMarker.initMobileMark()).height(handerSize).width(70f).tooltip("开启手机标记");
+                if(mobile){
+                    t.button("♐ >", textHanderNC, () -> {arcMarker.initMobileMark();
+                        ui.announce("[cyan]你已进入标记点模式，长按屏幕可进行标记。");
+                    }).height(handerSize).width(70f).tooltip("开启手机标记");
+                }else{
+                    t.button("♐ >", textHanderNC, () -> showns[5] = !showns[5]).height(handerSize).width(70f).tooltip("标记");
+                }
 
-                t.button("[#eab678]标", textHander, () -> settings.put("markType",0)).checked(settings.getInt("markType") == 0).size(handerSize).tooltip("标记位置");
-                t.button("[#00ffff]集", textHander, () -> settings.put("markType",1)).checked(settings.getInt("markType") == 1).size(handerSize).tooltip("标记集合点");
-                t.button("[#ff0000]攻", textHander, () -> settings.put("markType",2)).checked(settings.getInt("markType") == 2).size(handerSize).tooltip("标记攻击点");
-                t.button("[#7fff00]守", textHander, () -> settings.put("markType",3)).checked(settings.getInt("markType") == 3).size(handerSize).tooltip("标记防守点");
+
+                t.button("[#eab678]标", textHander, () -> settings.put("markType",0)).size(handerSize).tooltip("标记位置");
+                t.button("[#00ffff]集", textHander, () -> settings.put("markType",1)).size(handerSize).tooltip("标记集合点");
+                t.button("[#ff0000]攻", textHander, () -> settings.put("markType",2)).size(handerSize).tooltip("标记攻击点");
+                t.button("[#7fff00]守", textHander, () -> settings.put("markType",3)).size(handerSize).tooltip("标记防守点");
 
             }, () -> showns[5]).left();
 
