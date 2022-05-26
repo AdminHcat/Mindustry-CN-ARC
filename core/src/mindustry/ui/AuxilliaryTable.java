@@ -305,12 +305,12 @@ public class AuxilliaryTable extends Table {
             body.row();
 
             body.collapser(t -> {
-                t.button("♐ >", textHanderNC, () -> showns[5] = !showns[5]).height(handerSize).width(70f).tooltip("标记器");
+                t.button("♐ >", textHanderNC, () -> arcMarker.initMobileMark()).height(handerSize).width(70f).tooltip("开启手机标记");
 
-                t.button("[#eab678]标", textHanderNC, () -> settings.put("markType",0)).checked(settings.getInt("markType") == 0).size(handerSize).tooltip("标记器");
-                t.button("[#00ffff]集", textHanderNC, () -> settings.put("markType",1)).checked(settings.getInt("markType") == 1).size(handerSize).tooltip("标记器");
-                t.button("[#ff0000]攻", textHanderNC, () -> settings.put("markType",2)).checked(settings.getInt("markType") == 2).size(handerSize).tooltip("标记器");
-                t.button("[#7fff00]守", textHanderNC, () -> settings.put("markType",3)).checked(settings.getInt("markType") == 3).size(handerSize).tooltip("标记器");
+                t.button("[#eab678]标", textHander, () -> settings.put("markType",0)).checked(settings.getInt("markType") == 0).size(handerSize).tooltip("标记位置");
+                t.button("[#00ffff]集", textHander, () -> settings.put("markType",1)).checked(settings.getInt("markType") == 1).size(handerSize).tooltip("标记集合点");
+                t.button("[#ff0000]攻", textHander, () -> settings.put("markType",2)).checked(settings.getInt("markType") == 2).size(handerSize).tooltip("标记攻击点");
+                t.button("[#7fff00]守", textHander, () -> settings.put("markType",3)).checked(settings.getInt("markType") == 3).size(handerSize).tooltip("标记防守点");
 
             }, () -> showns[5]).left();
 

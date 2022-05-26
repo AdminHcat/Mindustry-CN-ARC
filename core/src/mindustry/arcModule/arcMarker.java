@@ -24,6 +24,9 @@ public class arcMarker{
     public Vec2 loc = new Vec2(0,0);
     public float time = 0;
 
+    //手机端标记
+    public static Boolean mobileMark = false;
+
     public static ObjectMap<markType,String> markString =  new ObjectMap<>(){{
         put(markType.MARK,"标记");
         put(markType.GATHER,"集合");
@@ -92,7 +95,6 @@ public class arcMarker{
                     }
                 }
             } catch (Exception e) {}
-            Call.sendChatMessage(msgMarkType + stringMark.get(msgMarkType));
             arcMarker.newMarker(x,y,stringMark.get(msgMarkType)).showEffect();
 
         } else if (message.contains("发起集合")) {
@@ -126,7 +128,8 @@ public class arcMarker{
 
     public void shareInfo(){
         String location = "(" + (int)loc.x + "," + (int)loc.y + ")";
-        Call.sendChatMessage(msgHander + markString.get(type) +"：[red]"+location);
+        if(markList.size<2 || (Time.time - markList.get(markList.size - 2).time)>100f)
+            Call.sendChatMessage(msgHander + markString.get(type) +"：[red]"+location);
     }
 
     public void showEffect(){
@@ -158,8 +161,19 @@ public class arcMarker{
         if(control.input instanceof DesktopInput){
             ((DesktopInput) control.input).panning = true;
         }
-        Core.camera.position.set(loc.x,loc.y);
+        Core.camera.position.set(loc.x * tilesize,loc.y * tilesize);
         showEffect();
+    }
+
+    public static void arcSendMarkPos(float x, float y){
+        if (mobileMark){
+            arcMarker.newMarker((int)x/8,(int)y/8).shareInfo();
+            mobileMark = false;
+        }
+    }
+
+    public static void initMobileMark(){
+        mobileMark = true;
     }
 
 }

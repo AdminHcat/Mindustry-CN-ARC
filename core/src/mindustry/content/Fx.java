@@ -2321,11 +2321,12 @@ public class Fx{
         Lines.endLine();
     }).followParent(false).rotWithParent(false),
 
-    arcMarker = new Effect(600, e -> {
+    arcMarker = new Effect(1800, e -> {
         color(Pal.command);
-        stroke(e.fout() * 2f);
-        Lines.circle(e.x, e.y, 4f + e.finpow() * 120f);
+        stroke(2f);
         Lines.circle(e.x, e.y,1f*tilesize);
+        stroke(e.fout() * 1.5f + 0.5f);
+        Lines.circle(e.x, e.y, 8f + e.finpow() * 92f);
         Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Pal.command);
     }),
 
@@ -2348,31 +2349,31 @@ public class Fx{
     }),
 
     arcAttackMarker = new Effect(1800, e -> {
-        color(Color.red);
+        color(Pal.attackMark);
         stroke(2f);
         Lines.circle(e.x, e.y,1f*tilesize);
         float radius = 20f + e.finpow() * 80f;
         Lines.circle(e.x, e.y, radius);
         for(int i = 0; i < 4; i++){
             float rot = i * 90f + 45f + (-Time.time) % 360f;
-            Drawf.simpleArrow(e.x  + Angles.trnsx(rot, radius),e.y +  + Angles.trnsy(rot, radius), e.x, e.y,6f + 4 * e.finpow(),2f + 4 * e.finpow(),Color.red);
+            Drawf.simpleArrow(e.x  + Angles.trnsx(rot, radius),e.y +  + Angles.trnsy(rot, radius), e.x, e.y,6f + 4 * e.finpow(),2f + 4 * e.finpow(),Pal.attackMark);
         }
-        Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Color.red);
+        Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Pal.attackMark);
     }),
 
     arcDefenseMarker = new Effect(1800, e -> {
-        Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Color.acid);
-        color(Color.acid);
+        Drawf.arrow(player.x, player.y, e.x, e.y, 5f * tilesize, 4f, Pal.heal);
+        color(Pal.heal);
         if(e.fin()<0.2f){
-            Lines.circle(e.x, e.y, 20f + e.fin() * 80f);
+            Lines.circle(e.x, e.y, 20f + e.fin() * 400f);
             return;
         }
-        Lines.circle(e.x, e.y, 100f);
-        Lines.circle(e.x, e.y, 95f);
+        Lines.circle(e.x, e.y, 101f);
+        Lines.circle(e.x, e.y, 93f);
         for(int i = 0; i < 16; i++){
             float rot = i * 22.5f;
             if((e.fin() -0.2f) * 50 > i)
-            Drawf.simpleArrow(e.x, e.y,e.x  + Angles.trnsx(rot, 100f),e.y +  + Angles.trnsy(rot, 100f),104f,4f,Color.acid);
+            Drawf.simpleArrow(e.x, e.y,e.x  + Angles.trnsx(rot, 120f),e.y +  + Angles.trnsy(rot, 120f),96f,4f,Pal.heal);
         }
     }),
 

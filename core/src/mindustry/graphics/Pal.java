@@ -12,6 +12,9 @@ public class Pal{
     items = Color.valueOf("2ea756"),
     command = Color.valueOf("eab678"),
 
+    defenceMark = Color.valueOf("7fff00"),
+    attackMark = Color.valueOf("ff0000"),
+
     sap = Color.valueOf("665c9f"),
     sapBullet = Color.valueOf("bf92f9"),
     sapBulletBack = Color.valueOf("6d56bf"),
