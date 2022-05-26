@@ -13,6 +13,7 @@ import arc.util.Tmp;
 import mindustry.ai.types.BuilderAI;
 import mindustry.ai.types.MinerAI;
 import mindustry.ai.types.RepairAI;
+import mindustry.arcModule.arcMarker;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.content.StatusEffects;
@@ -266,10 +267,10 @@ public class AdvanceToolTable extends Table {
                     rebuild[0].run();
                 }).tooltip("选择玩家当前位置：" + Strings.autoFixed(player.x / tilesize, 2) + "," + Strings.autoFixed(player.y / tilesize, 2)).height(50f);
                 t.button(StatusEffects.blasted.emoji(), () -> {
-                    unitLoc.x = ui.chatfrag.getArcMarkerX() / tilesize;
-                    unitLoc.y = ui.chatfrag.getArcMarkerY() / tilesize;
+                    unitLoc.x = arcMarker.markList.peek().loc.x;
+                    unitLoc.y = arcMarker.markList.peek().loc.y;
                     rebuild[0].run();
-                }).tooltip("选择上个标记点：" + ui.chatfrag.getArcMarkerX() / tilesize + "," + ui.chatfrag.getArcMarkerY() / tilesize).height(50f);
+                }).tooltip("选择上个标记点：" + arcMarker.markList.peek().loc.x + "," + arcMarker.markList.peek().loc.y).height(50f);
             });
 
             table.row();

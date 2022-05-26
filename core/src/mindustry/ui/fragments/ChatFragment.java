@@ -41,11 +41,6 @@ public class ChatFragment extends Table{
     private Seq<String> history = new Seq<>();
     private int historyPos = 0;
     private int scrollPos = 0;
-    public float arcMarkX = 0,arcMarkY = 0;
-    /** Mark. */
-    public Seq<arcMarker> marker = new Seq<>();
-    arcMarker.markType msgType = null;
-    String msgMarkType = "";
 
     public ChatFragment(){
         super();
@@ -280,68 +275,13 @@ public class ChatFragment extends Table{
     public void addMessage(String message){
         if(message == null) return;
 
-        feedbackMessage(message);
+        arcMarker.newMsgMarker(message);
         messages.insert(0, message);
 
         fadetime += 1f;
         fadetime = Math.min(fadetime, messagesShown) + 1f;
         
         if(scrollPos > 0) scrollPos++;
-    }
-
-    private void feedbackMessage(String message) {
-        if (message.contains("[ARC")) {
-            int x = 0;
-            int y = 0;
-            try {
-                int strLength = message.length();
-                int stopindex = 0;
-                for (int i = 0; i < strLength; i++) {
-                    if (message.substring(i, i + 1).equals("]")) {
-                        msgMarkType = message.substring(i+1,i+3).trim();
-                    }
-                    if (message.substring(i, i + 1).equals("(")) {
-                        stopindex = i;
-                    }
-                    if (message.substring(i, i + 1).equals(",") && stopindex > 0) {
-                        x = Integer.parseInt(message.substring(stopindex + 1, i).trim());
-                        y = Integer.parseInt(message.substring(i + 1, strLength - 1).trim());
-                        break;
-                    }
-                }
-                arcMarker.markString.each((type, name) ->{
-                    if(name == msgMarkType) msgType = type;
-                });
-            } catch (Exception e) {}
-
-            arcMarker.newMarker(x,y,msgType).showEffect();
-
-        } else if (message.contains("发起集合")) {
-            int strLength = message.length();
-            int x = 0;
-            int y = 0;
-            int initindex = 0;
-            int interval = 0;
-            try {
-                for (int i = 0; i < strLength; i++) {
-                    if (message.substring(i, i + 1).equals("(")) {
-                        initindex = i;
-                    }
-                    if (initindex > 0) {
-                        if (message.substring(i, i + 1).equals(",")) {
-                            interval = i;
-                        }
-                        if (message.substring(i, i + 1).equals(")")) {
-                            x = Integer.parseInt(message.substring(initindex + 6, interval).trim());
-                            y = Integer.parseInt(message.substring(interval + 1, i - 7).trim());
-                            break;
-                        }
-                    }
-                }
-            }catch (Exception e) {}
-
-            arcMarker.newMarker(x,y, arcMarker.markType.GATHER).showEffect();
-        }
     }
 
     private boolean arcMessage(String message){
@@ -451,13 +391,5 @@ public class ChatFragment extends Table{
         public boolean isValid(){
             return valid.get();
         }
-    }
-
-    public float  getArcMarkerX(){
-        return arcMarkX*tilesize;
-    }
-
-    public float  getArcMarkerY(){
-        return arcMarkY*tilesize;
     }
 }

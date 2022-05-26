@@ -22,6 +22,7 @@ import mindustry.gen.*;
 
 import mindustry.type.StatusEffect;
 
+import mindustry.arcModule.arcMarker;
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
@@ -31,7 +32,7 @@ import static mindustry.ui.Styles.*;
 
 public class AuxilliaryTable extends Table {
     private boolean show = true;
-    private boolean[] showns = {false, false, false, false ,mobile};
+    private boolean[] showns = {false, false, false, false ,mobile,false};
     public int waveOffset = 0;
     private float imgSize = 33f;
 
@@ -256,7 +257,7 @@ public class AuxilliaryTable extends Table {
                 }).size(handerSize).tooltip("在建造列表加入被摧毁建筑");
 
                 t.button(Blocks.message.emoji(), textHanderNC, () -> {
-                    if (ui.chatfrag.marker.size>0) ui.chatfrag.marker.getFrac(ui.chatfrag.marker.size-1).reviewEffect();
+                    if (arcMarker.markList.size>0) arcMarker.markList.peek().reviewEffect();
                 }).size(handerSize).tooltip("锁定上个标记点");
                 /*
                 t.button(Icon.modeAttack, ImageHanderNC, imgSize, () -> {
@@ -268,9 +269,10 @@ public class AuxilliaryTable extends Table {
                     playerBoost = !playerBoost;
                 }).tooltip("助推").size(handerSize).checked(playerBoost);
 
-                t.button("♐", textHander, () -> {
-                    settings.put("markType",(settings.getInt("markType")+1)%4);
-                }).checked(b -> playerAI instanceof DefenderAI).size(handerSize).tooltip("保护AI");
+                t.button("♐", textHander,
+                    () -> showns[5] = !showns[5]).checked(showns[5]).size(handerSize).tooltip("标记器");
+                //    settings.put("markType",(settings.getInt("markType")+1)%4);
+                //}).checked(b -> playerAI instanceof DefenderAI).size(handerSize).tooltip("保护AI");
 
             }, () -> showns[3]).left();
 
@@ -299,6 +301,18 @@ public class AuxilliaryTable extends Table {
                 }).tooltip("丢下载荷");
 
             }, () -> showns[4]).left();
+
+            body.row();
+
+            body.collapser(t -> {
+                t.button("♐ >", textHanderNC, () -> showns[5] = !showns[5]).height(handerSize).width(70f).tooltip("标记器");
+
+                t.button("[#eab678]标", textHanderNC, () -> settings.put("markType",0)).checked(settings.getInt("markType") == 0).size(handerSize).tooltip("标记器");
+                t.button("[#00ffff]集", textHanderNC, () -> settings.put("markType",1)).checked(settings.getInt("markType") == 1).size(handerSize).tooltip("标记器");
+                t.button("[#ff0000]攻", textHanderNC, () -> settings.put("markType",2)).checked(settings.getInt("markType") == 2).size(handerSize).tooltip("标记器");
+                t.button("[#7fff00]守", textHanderNC, () -> settings.put("markType",3)).checked(settings.getInt("markType") == 3).size(handerSize).tooltip("标记器");
+
+            }, () -> showns[5]).left();
 
             body.row();
 

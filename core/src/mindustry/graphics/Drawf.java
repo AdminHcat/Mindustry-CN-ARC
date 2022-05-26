@@ -411,12 +411,15 @@ public class Drawf{
     }
 
     public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius, Color color){
+        simpleArrow(x, y, x2, y2, length, radius, color,1f);
+    }
+
+    public static void simpleArrow(float x, float y, float x2, float y2, float length, float radius, Color color,float alpha){
         float angle = Angles.angle(x, y, x2, y2);
-        float space = 2f;
         Tmp.v1.set(x2, y2).sub(x, y).limit(length);
         float vx = Tmp.v1.x + x, vy = Tmp.v1.y + y;
 
-        Draw.color(color);
+        Draw.color(color,alpha);
         Fill.poly(vx, vy, 3, radius, angle);
         Draw.color();
     }

@@ -257,14 +257,6 @@ public class MI2ToolsTable extends Table{
                     player.buildDestroyedBlocks();
                 }).height(buttonSize).growX();
 
-                t.button(new TextureRegionDrawable(gamma.uiIcon), imgStyle, imgSize, () -> {
-                    if(control.input instanceof DesktopInput){
-                        ((DesktopInput) control.input).panning = true;
-                    }
-                    Core.camera.position.set(ui.chatfrag.getArcMarkerX(),ui.chatfrag.getArcMarkerY());
-
-                }).height(buttonSize).growX();
-
                 t.button(Icon.modeAttack, imgToggleStyle, imgSize, () -> {
                     boolean at = settings.getBool("autotarget");
                     settings.put("autotarget", !at);
