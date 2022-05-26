@@ -49,12 +49,12 @@ public class ImpactReactor extends PowerGenerator{
     @Override
     public void setBars(){
         super.setBars();
-
+        /*
         addBar("poweroutput", (GeneratorBuild entity) -> new Bar(() ->
         Core.bundle.format("bar.poweroutput",
         Strings.fixed(Math.max(entity.getPowerProduction() - consPower.usage, 0) * 60 * entity.timeScale(), 1)),
         () -> Pal.powerBar,
-        () -> entity.productionEfficiency));
+        () -> entity.productionEfficiency));*/
     }
 
     @Override
