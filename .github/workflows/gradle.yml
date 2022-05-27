@@ -29,9 +29,7 @@ jobs:
     - name: 设置 Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
-    - name: 使用Gradle构建
-      run: ./gradlew desktop:dist
+        arguments: desktop:dist
     - name: compile
       uses: actions/upload-artifact@v2
       with: 
