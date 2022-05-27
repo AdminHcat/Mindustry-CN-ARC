@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with: 
          name: test
-         path: README.md
+         path: desktop/build/libs/.*
     - name: 发布 Releases
       id: testid2
       uses: actions/create-release@v1
