@@ -1,36 +1,51 @@
-name: Tests
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-on: [push, workflow_dispatch]
+name: Java CI with Gradle
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
 
 jobs:
-  runPush:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Trigger BE build
-      if: ${{ github.repository == 'Anuken/Mindustry' }}
-      run: |
-        git clone --depth=1 --branch=master https://github.com/Anuken/MindustryBuilds ../MindustryBuilds
-        cd ../MindustryBuilds
-        BNUM=$(($GITHUB_RUN_NUMBER + 20000))
-        git tag ${BNUM}
-        git config --global user.name "Github Actions"
-        git push https://Anuken:${{ secrets.API_TOKEN_GITHUB }}@github.com/Anuken/MindustryBuilds ${BNUM}
-    - name: Set up JDK 17
-      uses: actions/setup-java@v1
+    - uses: actions/checkout@v3
+    - name: 设置 JDK 17
+      uses: actions/setup-java@v3
       with:
-        java-version: 17
-    - name: Setup Gradle
+        java-version: '17'
+        distribution: 'temurin'
+    - name: 设置 Gradle
       uses: gradle/gradle-build-action@v2
-    - name: Update bundles
-      if: ${{ github.repository == 'Anuken/Mindustry' }}
-      run: |
-        ./gradlew updateBundles
-        if [ -n "$(git status --porcelain)" ]; then
-          git add core/assets/bundles/*
-          git commit -m "Automatic bundle update"
-          git push
-        fi
-    - name: Run unit tests
-      run: ./gradlew clean cleanTest test --stacktrace
+      with:
+        arguments: build
+    - name: 使用Gradle构建
+      run: ./gradlew desktop:dist
+    - name: compile
+      uses: actions/upload-artifact@v2
+      with: 
+         name: test
+         path: README.md
+    - name: 发布 Releases
+      id: testid2
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+            tag_name: release_name
+                #tag_name: ${{ github.ref }}
+            release_name: test3
+            body: release3
+            draft: false
+            prerelease: false
