@@ -215,6 +215,7 @@ public class NetClient implements ApplicationListener{
     public static void sendMessage(String message, @Nullable String unformatted, @Nullable Player playersender){
         if(Vars.ui != null){
             Vars.ui.chatfrag.addMessage(message);
+            Sounds.chatMessage.play();
         }
 
         //display raw unformatted text above player head
@@ -229,6 +230,7 @@ public class NetClient implements ApplicationListener{
     public static void sendMessage(String message){
         if(Vars.ui != null){
             Vars.ui.chatfrag.addMessage(message);
+            Sounds.chatMessage.play();
         }
     }
 
